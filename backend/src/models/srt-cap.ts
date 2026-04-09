@@ -56,6 +56,7 @@ export interface SrtCapSelfAssessment {
   review_notes: string | null;
   status: SelfAssessmentStatus;
   created_at: Date;
+  updated_at: Date;
 }
 
 export type MeetsStandard = 'yes' | 'no' | 'na' | 'not_evident';

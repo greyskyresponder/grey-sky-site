@@ -64,4 +64,5 @@ export interface UserOrganization {
   sponsorship_active: boolean;
   sponsorship_scope: Record<string, unknown> | null;
   created_at: Date;
+  updated_at: Date;
 }
