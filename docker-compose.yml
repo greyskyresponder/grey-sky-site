@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-greysky}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-greysky}
+      POSTGRES_DB: ${POSTGRES_DB:-greysky}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U greysky"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgres://greysky:greysky@db:5432/greysky
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:3000
+      NODE_ENV: development
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
