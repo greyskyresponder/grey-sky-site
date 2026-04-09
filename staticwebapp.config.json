@@ -2,10 +2,6 @@
   "platform": {
     "apiRuntime": "node:22"
   },
-  "navigationFallback": {
-    "rewrite": "/index.html",
-    "exclude": ["/_next/*", "/api/*", "/*.ico", "/*.png", "/*.jpg", "/*.svg"]
-  },
   "globalHeaders": {
     "X-Frame-Options": "DENY",
     "X-Content-Type-Options": "nosniff",
