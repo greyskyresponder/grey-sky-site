@@ -13,7 +13,7 @@
 |-------|-------|--------|
 | 0 | Platform Reference Spec | ✅ Approved |
 | 1 | Marketing Pages (RTLT, Story, Community) | ✅ Complete (2026-04-09) |
-| 2 | Backend Foundation + Schema + Seeds | Pending |
+| 2 | Backend Foundation + Schema + Seeds | ✅ Complete (2026-04-09) |
 | 3 | Auth + Member Dashboard | Pending |
 | 4 | Agency Dashboard + SRT-CAP Workflow | Pending |
 | 5 | Admin Tools + Security Hardening | Pending |
@@ -24,6 +24,7 @@
 | Doc ID | Title | Phase | Status |
 |--------|-------|-------|--------|
 | GSR-DOC-000 | Platform Reference Specification | 0 | approved |
+| GSR-DOC-001 | Backend Foundation | 2 | complete |
 
 ### Reference Documents (non-buildable)
 | Doc ID | Title | Source |
