@@ -36,3 +36,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Supabase schema
+
+A starter schema for the credential portal lives in `supabase/schema.sql`.
+
+To apply it locally (Postgres running and `psql` available):
+
+```bash
+psql $DATABASE_URL -f supabase/schema.sql
+psql $DATABASE_URL -f supabase/seeds/sample-tenants.sql
+```
+
+(Replace `$DATABASE_URL` with your Supabase/Postgres connection string.)
+
+The schema covers tenants, programs, teams, responders, requirements, evidence, and assessments. TypeScript interfaces matching the schema are available in `src/lib/types.ts`.

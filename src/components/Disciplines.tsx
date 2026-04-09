@@ -19,11 +19,11 @@ export default function Disciplines() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            12 Specialized Response Disciplines
+            12 Disciplines • One Credential Standard
           </h2>
           <p className="text-lg text-[var(--gs-silver)] max-w-2xl mx-auto">
-            Credentialing pathways aligned with FEMA&apos;s Resource Typing Library
-            Tool (RTLT) across every major disaster response specialty.
+            Every lane is mapped to FEMA&apos;s RTLT typing, position task books, and Grey Sky&apos;s
+            peer-review checklist so jurisdictions know exactly what capability they are ordering.
           </p>
         </div>
 
@@ -44,11 +44,10 @@ export default function Disciplines() {
 
         <div className="text-center mt-12">
           <p className="text-[var(--gs-silver)] text-sm">
-            Standards based on{" "}
-            <span className="text-[var(--gs-accent)] font-medium">
-              FEMA National Qualification System (NQS)
-            </span>{" "}
-            and Resource Typing Library Tool (RTLT)
+            Standards anchored to{" "}
+            <span className="text-[var(--gs-accent)] font-medium">FEMA National Qualification System</span>
+            {" "}and the Resource Typing Library Tool, with Grey Sky credential stewards keeping
+            every record current before you ever deploy.
           </p>
         </div>
       </div>

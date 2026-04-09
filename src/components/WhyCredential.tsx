@@ -1,39 +1,39 @@
 const reasons = [
   {
-    icon: "🎯",
-    title: "Demonstrate Expertise",
+    icon: "⏱️",
+    title: "Verified in Days",
     description:
-      "Credentialing aligned with FEMA National Qualification System (NQS) standards proves your competence to employers, agencies, and deployment teams.",
+      "Upload your packet, add supervisor references, and receive a credential decision in about ten days so you are ready before the next activation order hits.",
   },
   {
-    icon: "📈",
-    title: "Advance Your Career",
+    icon: "📜",
+    title: "Deployment History That Travels",
     description:
-      "Stand out in a competitive field. Credentialed responders access better positions, higher responsibility, and priority deployment opportunities.",
+      "Every mission, task book, and training hour is logged against FEMA NQS positions so jurisdictions can trust your record without another interview loop.",
+  },
+  {
+    icon: "🛰️",
+    title: "Roster Visibility",
+    description:
+      "Incident managers can search, filter, and request you by discipline, typing level, and availability—no cold calls or favors required.",
+  },
+  {
+    icon: "🛡️",
+    title: "Command-Level Assurance",
+    description:
+      "Peer reviewers and former supervisors sign off on your capability. Grey Sky enforces the standard so agencies know exactly who is stepping into their span of control.",
   },
   {
     icon: "🤝",
-    title: "Join a Professional Network",
+    title: "Professional Covenant",
     description:
-      "Connect with seasoned disaster response professionals. Mentorship, peer support, and collaboration with the best in the field.",
+      "Join a society built for responders by responders—a place where mentorship, doctrine fidelity, and servant leadership are mandatory, not optional.",
   },
   {
     icon: "🚀",
-    title: "Deploy Ready",
+    title: "Priority Deployments",
     description:
-      "When disaster strikes, credentialed responders deploy first. Your qualifications are verified, your training is current, and you're ready to go.",
-  },
-  {
-    icon: "📋",
-    title: "Track Your Qualifications",
-    description:
-      "Maintain a verified record of your certifications, training hours, continuing education, and deployment history — all in one place.",
-  },
-  {
-    icon: "🏛️",
-    title: "Shape the Standard",
-    description:
-      "Contribute to the professional development of disaster response. Help build the frameworks that define competence in emergency management.",
+      "Credentialed members are first in line when Longview or partner agencies mobilize IMTs, EOC support, or specialty response teams across 12 disciplines.",
   },
 ];
 
@@ -43,11 +43,11 @@ export default function WhyCredential() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold text-[var(--gs-navy)] mb-4">
-            Why Get Credentialed?
+            Why Credential with Grey Sky?
           </h2>
           <p className="text-lg text-[var(--gs-steel)] max-w-2xl mx-auto">
-            In disaster response, credentials aren&apos;t just paper — they&apos;re proof
-            that you can perform when lives are on the line.
+            This isn&apos;t a badge factory. It&apos;s the verification engine the emergency
+            management community already trusts when they need responders who can execute.
           </p>
         </div>
 
