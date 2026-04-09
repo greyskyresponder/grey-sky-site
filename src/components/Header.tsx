@@ -1,56 +1,59 @@
 "use client";
+
 import { useState } from "react";
+import Link from "next/link";
+
+const navLinks = [
+  { href: "/standards", label: "Standards" },
+  { href: "/story", label: "Tell Your Story" },
+  { href: "/community", label: "Community" },
+  { href: "/membership", label: "Membership" },
+  { href: "/about", label: "About" },
+];
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 w-full bg-[var(--gs-navy)]/95 backdrop-blur-sm z-50 border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--gs-navy)]/95 backdrop-blur-md border-b border-[var(--gs-steel)]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-[var(--gs-accent)] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">GS</span>
+        <div className="flex items-center justify-between h-16">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 rounded bg-[var(--gs-gold)] flex items-center justify-center">
+              <span className="text-[var(--gs-navy)] font-bold text-sm">GS</span>
             </div>
-            <div>
-              <span className="text-white font-bold text-lg tracking-tight">
-                Grey Sky
+            <div className="hidden sm:block">
+              <span className="text-white font-semibold text-sm tracking-wide">
+                Grey Sky Responder
               </span>
-              <span className="text-[var(--gs-silver)] text-sm block leading-none">
-                Responder Society
-              </span>
+              <span className="text-[var(--gs-silver)] text-xs block -mt-0.5">Society</span>
             </div>
-          </div>
+          </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center space-x-8">
-            <a href="#why" className="text-[var(--gs-silver)] hover:text-white transition text-sm font-medium">
-              Why Credential
-            </a>
-            <a href="#disciplines" className="text-[var(--gs-silver)] hover:text-white transition text-sm font-medium">
-              Disciplines
-            </a>
-            <a href="#membership" className="text-[var(--gs-silver)] hover:text-white transition text-sm font-medium">
-              Membership
-            </a>
-            <a href="#about" className="text-[var(--gs-silver)] hover:text-white transition text-sm font-medium">
-              About
-            </a>
-            <a
-              href="#join"
-              className="bg-[var(--gs-accent)] hover:bg-[var(--gs-accent-dark)] text-white px-5 py-2 rounded-lg text-sm font-semibold transition"
+          <nav className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-3 py-2 text-sm text-[var(--gs-silver)] hover:text-white transition-colors rounded-md hover:bg-white/5"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              href="/#waitlist"
+              className="ml-3 px-4 py-2 text-sm font-semibold bg-[var(--gs-gold)] text-[var(--gs-navy)] rounded-lg hover:bg-[var(--gs-gold-light)] transition-colors"
             >
-              Join Now
-            </a>
+              Join the Waitlist
+            </Link>
           </nav>
 
-          {/* Mobile menu button */}
           <button
-            className="md:hidden text-white"
             onClick={() => setMenuOpen(!menuOpen)}
+            className="lg:hidden p-2 text-[var(--gs-silver)] hover:text-white"
+            aria-label="Toggle menu"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {menuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -59,18 +62,31 @@ export default function Header() {
             </svg>
           </button>
         </div>
-
-        {/* Mobile Nav */}
-        {menuOpen && (
-          <div className="md:hidden pb-4 space-y-2">
-            <a href="#why" className="block text-[var(--gs-silver)] hover:text-white py-2 text-sm">Why Credential</a>
-            <a href="#disciplines" className="block text-[var(--gs-silver)] hover:text-white py-2 text-sm">Disciplines</a>
-            <a href="#membership" className="block text-[var(--gs-silver)] hover:text-white py-2 text-sm">Membership</a>
-            <a href="#about" className="block text-[var(--gs-silver)] hover:text-white py-2 text-sm">About</a>
-            <a href="#join" className="block bg-[var(--gs-accent)] text-white text-center py-2 rounded-lg text-sm font-semibold mt-2">Join Now</a>
-          </div>
-        )}
       </div>
+
+      {menuOpen && (
+        <div className="lg:hidden bg-[var(--gs-navy)] border-t border-[var(--gs-steel)]/20">
+          <div className="px-4 py-3 space-y-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className="block px-3 py-2 text-sm text-[var(--gs-silver)] hover:text-white hover:bg-white/5 rounded-md"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <Link
+              href="/#waitlist"
+              onClick={() => setMenuOpen(false)}
+              className="block mt-2 px-4 py-2 text-sm font-semibold bg-[var(--gs-gold)] text-[var(--gs-navy)] rounded-lg text-center hover:bg-[var(--gs-gold-light)] transition-colors"
+            >
+              Join the Waitlist
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

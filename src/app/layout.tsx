@@ -2,19 +2,22 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Grey Sky Responder Society | Disaster Response Credentialing",
+  title: "Grey Sky Responder Society | Your Service. Your Story. Recognized.",
   description:
-    "Credential, train, and deploy with the premier professional society for disaster response specialists. Built on FEMA NQS standards.",
+    "Professional development and credentialing for the disaster response workforce. Built on FEMA RTLT standards. Document, verify, and own your professional identity.",
   keywords: [
     "disaster response",
     "emergency management",
     "credentialing",
+    "FEMA RTLT",
     "FEMA NQS",
+    "professional development",
     "specialized response teams",
     "IMT",
     "US&R",
     "hazmat",
     "first responder",
+    "disaster credentialing",
   ],
 };
 

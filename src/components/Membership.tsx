@@ -66,7 +66,7 @@ export default function Membership() {
             Membership Tiers
           </h2>
           <p className="text-lg text-[var(--gs-steel)] max-w-2xl mx-auto">
-            Choose the level that matches your career stage. Every tier builds
+            Choose the level that matches your stage of service. Every tier builds
             toward deployment readiness.
           </p>
         </div>

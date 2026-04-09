@@ -3,18 +3,20 @@
 @tailwind utilities;
 
 :root {
-  /* Grey Sky Brand Colors */
-  --gs-navy: #1a2332;
-  --gs-slate: #2d3748;
-  --gs-steel: #4a5568;
-  --gs-silver: #a0aec0;
-  --gs-cloud: #e2e8f0;
-  --gs-white: #f7fafc;
-  --gs-accent: #3182ce;
-  --gs-accent-dark: #2c5282;
-  --gs-gold: #d69e2e;
-  --gs-alert: #e53e3e;
-  --gs-success: #38a169;
+  /* Grey Sky Brand Colors — Command Navy + Signal Gold */
+  --gs-navy: #0A1628;
+  --gs-slate: #1a2740;
+  --gs-steel: #3d4f66;
+  --gs-silver: #8a9bb5;
+  --gs-cloud: #dce4ef;
+  --gs-white: #f5f7fa;
+  --gs-accent: #2a6cb6;
+  --gs-accent-dark: #1d4e8a;
+  --gs-gold: #C5933A;
+  --gs-gold-light: #d4a94f;
+  --gs-gold-dark: #a67a2e;
+  --gs-alert: #c0392b;
+  --gs-success: #27864a;
 }
 
 html {
