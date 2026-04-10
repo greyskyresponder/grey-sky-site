@@ -23,7 +23,7 @@ COMMENT ON TABLE user_affinities IS 'Many-to-many: users select affinities that 
 CREATE TABLE rtlt_team_types (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   code            VARCHAR(50) NOT NULL UNIQUE,
-  name            TEXT NOT NULL,
+  name            TEXT NOT NULL UNIQUE,
   discipline      TEXT,
   nims_category   TEXT,
   description     TEXT,
