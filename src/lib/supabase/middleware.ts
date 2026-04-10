@@ -33,11 +33,13 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users away from dashboard
-  if (
-    !user &&
-    request.nextUrl.pathname.startsWith("/dashboard")
-  ) {
+  const protectedPrefixes = ["/dashboard", "/agency", "/admin"];
+  const isProtected = protectedPrefixes.some((prefix) =>
+    request.nextUrl.pathname.startsWith(prefix)
+  );
+
+  // Redirect unauthenticated users away from protected routes
+  if (!user && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
@@ -47,7 +49,7 @@ export async function updateSession(request: NextRequest) {
   if (
     user &&
     (request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/signup")
+      request.nextUrl.pathname === "/register")
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
