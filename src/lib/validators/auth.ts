@@ -1,3 +1,4 @@
+// TODO: Tests needed — validate schema edge cases (min/max length, email format, password mismatch)
 import { z } from 'zod';
 
 export const registrationSchema = z

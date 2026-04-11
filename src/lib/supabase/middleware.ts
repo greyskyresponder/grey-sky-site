@@ -1,3 +1,4 @@
+// TODO: Tests needed — unauthenticated redirect, role-based access (platform_admin, org_admin, member), auth page redirect for logged-in users
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -48,24 +49,38 @@ export async function updateSession(request: NextRequest) {
 
   // Role-based enforcement for authenticated users
   if (user) {
-    const role = (user.app_metadata?.role as string) ?? "member";
+    const needsRoleCheck =
+      pathname.startsWith("/admin") || pathname.startsWith("/agency");
 
-    // /admin/* requires platform_admin role
-    if (pathname.startsWith("/admin") && role !== "admin") {
-      const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
-    }
+    if (needsRoleCheck) {
+      // Query public.users for role — middleware runs before RLS context
+      const { data: profile } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", user.id)
+        .single();
 
-    // /agency/* requires org_admin or platform_admin role
-    if (
-      pathname.startsWith("/agency") &&
-      role !== "org_admin" &&
-      role !== "admin"
-    ) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
-      return NextResponse.redirect(url);
+      const role = profile?.role ?? "member";
+
+      // /admin/* requires platform_admin role
+      if (pathname.startsWith("/admin") && role !== "platform_admin") {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        url.searchParams.set("error", "insufficient_permissions");
+        return NextResponse.redirect(url);
+      }
+
+      // /agency/* requires org_admin or platform_admin role
+      if (
+        pathname.startsWith("/agency") &&
+        role !== "org_admin" &&
+        role !== "platform_admin"
+      ) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/dashboard";
+        url.searchParams.set("error", "insufficient_permissions");
+        return NextResponse.redirect(url);
+      }
     }
   }
 

@@ -1,3 +1,4 @@
+// TODO: Tests needed — successful signup, duplicate email, validation errors, optional field updates
 'use server';
 
 import { createClient } from '@/lib/supabase/server';

@@ -1,3 +1,4 @@
+// TODO: Tests needed — reset email sent, password update success, validation errors
 'use server';
 
 import { createClient } from '@/lib/supabase/server';

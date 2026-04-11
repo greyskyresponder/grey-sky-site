@@ -1,3 +1,4 @@
+// TODO: Tests needed — hook returns user/profile on auth, clears on signOut, handles auth state changes
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';

@@ -1,3 +1,4 @@
+// TODO: Tests needed — returns null when unauthenticated, returns AuthSession when valid, handles missing profile
 import { createClient } from '@/lib/supabase/server';
 import type { User as AuthUser } from '@supabase/supabase-js';
 import type { User } from '@/lib/types/users';

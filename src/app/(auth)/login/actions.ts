@@ -1,3 +1,4 @@
+// TODO: Tests needed — successful login with redirect, failed login, open redirect prevention, Zod validation
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
@@ -26,5 +27,11 @@ export async function signIn(formData: FormData, redirectTo?: string) {
     return { error: 'Invalid email or password' };
   }
 
-  redirect(redirectTo || '/dashboard');
+  // Only allow relative paths to prevent open redirect attacks
+  const safeRedirect =
+    redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+      ? redirectTo
+      : '/dashboard';
+
+  redirect(safeRedirect);
 }
