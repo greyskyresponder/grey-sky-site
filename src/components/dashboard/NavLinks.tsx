@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   FileText,
+  MapPin,
   User,
   Coins,
   FolderOpen,
@@ -21,6 +22,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Response Reports', href: '/dashboard/records', icon: FileText },
+  { label: 'Incidents', href: '/dashboard/incidents', icon: MapPin },
   { label: 'Profile', href: '/dashboard/profile', icon: User },
   { label: 'Sky Points', href: '/dashboard/points', icon: Coins },
   { label: 'Documents', href: '/dashboard/documents', icon: FolderOpen },

@@ -35,11 +35,29 @@ export type UserOrgRole = 'member' | 'team_lead' | 'admin' | 'assessor';
 
 // ── Group B: Incidents & Deployments ────────────────────
 
-/** B1: incidents.type */
-export type IncidentType = 'disaster' | 'exercise' | 'planned_event' | 'training' | 'steady_state';
+/** B1: incidents.incident_type (expanded in DOC-204) */
+export type IncidentType =
+  | 'natural_disaster'
+  | 'technological'
+  | 'human_caused'
+  | 'biological'
+  | 'planned_event'
+  | 'exercise'
+  | 'training'
+  | 'steady_state'
+  | 'disaster'; // legacy value from DOC-002
 
-/** B2: incidents.status */
-export type IncidentStatus = 'active' | 'closed';
+/** B2: incidents.status (expanded in DOC-204) */
+export type IncidentStatus = 'active' | 'closed' | 'historical' | 'merged' | 'draft';
+
+/** B2b: incidents.incident_scale (DOC-204) */
+export type IncidentScale = 'local' | 'regional' | 'state' | 'multi_state' | 'national' | 'international';
+
+/** B2c: incidents.source (DOC-204) */
+export type IncidentSource = 'member_submitted' | 'staff_created' | 'atlas_enriched' | 'fema_imported' | 'seed_data';
+
+/** B2d: incidents.verification_status (DOC-204) */
+export type IncidentVerification = 'unverified' | 'staff_verified' | 'fema_matched' | 'authoritative';
 
 /** B3: positions.nims_type */
 export type NimsType = 'type1' | 'type2' | 'type3' | 'type4' | 'type5';

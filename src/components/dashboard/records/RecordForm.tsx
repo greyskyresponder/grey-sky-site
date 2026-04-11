@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import { searchIncidents } from '@/lib/queries/incidents';
 import { searchPositions } from '@/lib/queries/positions-search';
 import { createDeploymentAction, updateDeploymentAction } from '@/lib/actions/deployments';
-import type { Incident, Position } from '@/lib/types/deployments';
+import type { Position } from '@/lib/types/deployments';
+import type { IncidentSummary as Incident } from '@/lib/types/incidents';
 import type { DeploymentRecordDetail } from '@/lib/types/deployment-views';
 
 const inputClass =
@@ -38,8 +39,18 @@ export function RecordForm({ record, categories, userOrgs }: Props) {
       ? ({
           id: record.incident.id,
           name: record.incident.name,
-          type: record.incident.type,
-          state: record.incident.state,
+          incident_type: record.incident.type,
+          location_state: record.incident.state,
+          incident_start_date: record.incident.startDate,
+          slug: '',
+          incident_subtype: null,
+          incident_end_date: record.incident.endDate,
+          location_county: null,
+          fema_disaster_number: record.incident.femaDisasterNumber,
+          verification_status: 'unverified',
+          status: 'active',
+          deployment_count: 0,
+          responder_count: 0,
         } as Incident)
       : null
   );
@@ -268,7 +279,7 @@ export function RecordForm({ record, categories, userOrgs }: Props) {
                   >
                     <span className="font-medium text-[var(--gs-navy)]">{inc.name}</span>
                     <span className="text-xs text-[var(--gs-steel)] ml-2">
-                      {inc.type} {inc.state ? `\u2013 ${inc.state}` : ''}
+                      {inc.incident_type} {inc.location_state ? `\u2013 ${inc.location_state}` : ''}
                     </span>
                   </button>
                 ))}

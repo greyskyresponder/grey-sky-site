@@ -8,6 +8,9 @@ export type {
   UserOrgRole,
   IncidentType,
   IncidentStatus,
+  IncidentScale,
+  IncidentSource,
+  IncidentVerification,
   NimsType,
   VerificationTier,
   DeploymentRecordStatus,
@@ -71,6 +74,17 @@ export type {
 } from './taxonomy';
 
 export type { AuditLogEntry } from './audit';
+
+export type {
+  Incident as IncidentFull,
+  IncidentUpdate,
+  IncidentSummary as IncidentSummaryFull,
+  IncidentCreateInput,
+  IncidentSearchFilters,
+  AgencyInvolved,
+  ExternalLink,
+  AffectedCounty,
+} from './incidents';
 
 export type {
   MemberProfile,

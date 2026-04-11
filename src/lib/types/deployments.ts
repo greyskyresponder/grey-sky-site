@@ -10,18 +10,18 @@ import type {
   EvaluationRequestStatus,
 } from './enums';
 
-/** incidents — 11 columns */
+/** incidents — core columns (used by deployment record joins) */
 export interface Incident {
   id: string;
   name: string;
   description: string | null;
-  type: IncidentType;
+  incident_type: IncidentType;
   declaration_number: string | null;
   fema_disaster_number: string | null;
-  start_date: string | null;
-  end_date: string | null;
-  state: string | null;
-  county: string | null;
+  incident_start_date: string | null;
+  incident_end_date: string | null;
+  location_state: string | null;
+  location_county: string | null;
   status: IncidentStatus;
   created_at: string;
 }

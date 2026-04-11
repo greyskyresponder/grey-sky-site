@@ -37,10 +37,10 @@ function mapRecord(row: Record<string, unknown>): DeploymentRecordDetail {
       ? {
           id: incident.id as string,
           name: incident.name as string,
-          type: incident.type as DeploymentRecordDetail['incident'] extends { type: infer T } ? T : never,
-          state: incident.state as string | null,
-          startDate: incident.start_date as string,
-          endDate: incident.end_date as string | null,
+          type: incident.incident_type as DeploymentRecordDetail['incident'] extends { type: infer T } ? T : never,
+          state: incident.location_state as string | null,
+          startDate: incident.incident_start_date as string,
+          endDate: incident.incident_end_date as string | null,
           femaDisasterNumber: incident.fema_disaster_number as string | null,
         }
       : null,
@@ -67,7 +67,7 @@ function mapRecord(row: Record<string, unknown>): DeploymentRecordDetail {
 
 const RECORD_SELECT = `
   *,
-  incidents(id, name, type, state, start_date, end_date, fema_disaster_number),
+  incidents(id, name, incident_type, location_state, incident_start_date, incident_end_date, fema_disaster_number),
   positions(id, title, nims_type, resource_category, discipline),
   organizations(id, name, type)
 `;
@@ -136,10 +136,12 @@ export async function createDeployment(
       .from('incidents')
       .insert({
         name: payload.incidentName,
-        type: payload.incidentType ?? 'steady_state',
-        state: payload.incidentState ?? null,
-        start_date: payload.incidentStartDate ?? payload.startDate,
+        incident_type: payload.incidentType ?? 'steady_state',
+        location_state: payload.incidentState ?? null,
+        incident_start_date: payload.incidentStartDate ?? payload.startDate,
         status: 'active',
+        source: 'member_submitted',
+        verification_status: 'unverified',
       })
       .select('id')
       .single();
@@ -195,10 +197,12 @@ export async function updateDeployment(
       .from('incidents')
       .insert({
         name: payload.incidentName,
-        type: payload.incidentType ?? 'steady_state',
-        state: payload.incidentState ?? null,
-        start_date: payload.incidentStartDate ?? payload.startDate,
+        incident_type: payload.incidentType ?? 'steady_state',
+        location_state: payload.incidentState ?? null,
+        incident_start_date: payload.incidentStartDate ?? payload.startDate,
         status: 'active',
+        source: 'member_submitted',
+        verification_status: 'unverified',
       })
       .select('id')
       .single();
