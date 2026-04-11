@@ -71,3 +71,20 @@ export type {
 } from './taxonomy';
 
 export type { AuditLogEntry } from './audit';
+
+export type {
+  MemberProfile,
+  UserOrganizationDetail,
+  UserAffinityDetail,
+  ProfileStats,
+  ProfileUpdatePayload,
+} from './profile';
+
+export type {
+  DeploymentRecordDetail,
+  IncidentSummary,
+  PositionSummary,
+  OrganizationSummary,
+  CreateDeploymentPayload,
+  DeploymentFilters,
+} from './deployment-views';
