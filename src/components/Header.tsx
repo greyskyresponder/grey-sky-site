@@ -4,10 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 
 const navLinks = [
+  { href: "/positions", label: "Positions" },
+  { href: "/teams", label: "Teams" },
   { href: "/standards", label: "Standards" },
-  { href: "/story", label: "Tell Your Story" },
-  { href: "/community", label: "Community" },
-  { href: "/membership", label: "Membership" },
   { href: "/about", label: "About" },
 ];
 
@@ -41,10 +40,10 @@ export default function Header() {
               </Link>
             ))}
             <Link
-              href="/#waitlist"
+              href="/join"
               className="ml-3 px-4 py-2 text-sm font-semibold bg-[var(--gs-gold)] text-[var(--gs-navy)] rounded-lg hover:bg-[var(--gs-gold-light)] transition-colors"
             >
-              Join the Waitlist
+              Tell Your Story
             </Link>
           </nav>
 
@@ -78,11 +77,11 @@ export default function Header() {
               </Link>
             ))}
             <Link
-              href="/#waitlist"
+              href="/join"
               onClick={() => setMenuOpen(false)}
               className="block mt-2 px-4 py-2 text-sm font-semibold bg-[var(--gs-gold)] text-[var(--gs-navy)] rounded-lg text-center hover:bg-[var(--gs-gold-light)] transition-colors"
             >
-              Join the Waitlist
+              Tell Your Story
             </Link>
           </div>
         </div>

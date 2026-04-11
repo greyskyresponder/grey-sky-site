@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import WaitlistForm from "@/components/WaitlistForm";
+import { JoinCTA } from "@/components/public/JoinCTA";
 import { disciplines } from "@/lib/disciplines";
 
 export default function Home() {
@@ -29,16 +29,16 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/#waitlist"
+              href="/join"
               className="px-8 py-3.5 bg-[var(--gs-gold)] text-[var(--gs-navy)] font-semibold rounded-lg hover:bg-[var(--gs-gold-light)] transition-colors"
             >
-              Join the Waitlist
+              Tell Your Story
             </Link>
             <Link
-              href="/standards"
+              href="/positions"
               className="px-8 py-3.5 border border-[var(--gs-steel)] text-white font-medium rounded-lg hover:bg-white/5 transition-colors"
             >
-              Explore the Standards
+              Browse RTLT Positions
             </Link>
           </div>
         </div>
@@ -149,10 +149,10 @@ export default function Home() {
             ))}
           </div>
           <Link
-            href="/story"
+            href="/join"
             className="inline-flex items-center gap-2 text-[var(--gs-gold)] font-semibold hover:text-[var(--gs-gold-light)] transition-colors"
           >
-            Learn how it works
+            Tell Your Story
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -233,20 +233,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Coming Soon / Waitlist */}
-      <section id="waitlist" className="py-20 bg-gradient-to-b from-[var(--gs-slate)] to-[var(--gs-navy)]">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-[var(--gs-gold)] font-semibold text-sm uppercase tracking-wider mb-3">Coming Soon</p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Be First In Line
-          </h2>
-          <p className="text-[var(--gs-silver)] text-lg mb-8 leading-relaxed">
-            Grey Sky Responder Society is launching soon. Join the waitlist to be among the first
-            to claim your professional identity.
-          </p>
-          <WaitlistForm />
-        </div>
-      </section>
+      {/* Join CTA */}
+      <JoinCTA />
 
       <Footer />
     </main>

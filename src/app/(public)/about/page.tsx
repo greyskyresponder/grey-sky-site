@@ -130,10 +130,10 @@ export default function AboutPage() {
           </blockquote>
           <div className="w-12 h-px bg-[var(--gs-gold)] mx-auto mb-6" />
           <Link
-            href="/#waitlist"
+            href="/join"
             className="inline-block px-8 py-3.5 bg-[var(--gs-gold)] text-[var(--gs-navy)] font-semibold rounded-lg hover:bg-[var(--gs-gold-light)] transition-colors"
           >
-            Join the Waitlist
+            Tell Your Story
           </Link>
         </div>
       </section>
