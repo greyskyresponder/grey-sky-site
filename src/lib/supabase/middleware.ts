@@ -33,9 +33,10 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const pathname = request.nextUrl.pathname;
   const protectedPrefixes = ["/dashboard", "/agency", "/admin"];
   const isProtected = protectedPrefixes.some((prefix) =>
-    request.nextUrl.pathname.startsWith(prefix)
+    pathname.startsWith(prefix)
   );
 
   // Redirect unauthenticated users away from protected routes
@@ -45,11 +46,33 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Role-based enforcement for authenticated users
+  if (user) {
+    const role = (user.app_metadata?.role as string) ?? "member";
+
+    // /admin/* requires platform_admin role
+    if (pathname.startsWith("/admin") && role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+
+    // /agency/* requires org_admin or platform_admin role
+    if (
+      pathname.startsWith("/agency") &&
+      role !== "org_admin" &&
+      role !== "admin"
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Redirect authenticated users away from auth pages
   if (
     user &&
-    (request.nextUrl.pathname === "/login" ||
-      request.nextUrl.pathname === "/register")
+    (pathname === "/login" || pathname === "/register")
   ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
