@@ -1,20 +1,36 @@
-import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
-import DashboardShell from "./DashboardShell";
+import { redirect } from 'next/navigation';
+import { getUser } from '@/lib/auth/getUser';
+import DashboardLayoutClient from './DashboardLayoutClient';
 
 export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const session = await getUser();
 
-  if (!user) {
-    redirect("/login");
+  if (!session) {
+    redirect('/auth/login?redirect=/dashboard');
   }
 
-  return <DashboardShell user={user}>{children}</DashboardShell>;
+  const { profile } = session;
+
+  const displayName =
+    [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
+    session.user.email?.split('@')[0] ||
+    'Responder';
+
+  const sidebarUser = {
+    displayName,
+    avatarUrl: profile.avatar_url,
+    membershipStatus: profile.membership_status,
+    membershipExpiresAt: profile.membership_expires_at,
+    email: session.user.email || '',
+  };
+
+  return (
+    <DashboardLayoutClient sidebarUser={sidebarUser}>
+      {children}
+    </DashboardLayoutClient>
+  );
 }
