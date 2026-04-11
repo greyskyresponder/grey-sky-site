@@ -1,3 +1,6 @@
+// TODO: test — renders 4 StatCards with correct data from Supabase
+// TODO: test — empty state shows "File Your First Response Report" CTA
+// TODO: test — user with records but no validations shows validation CTA
 import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/auth/getUser';
 import { createAdminClient } from '@/lib/supabase/admin';
