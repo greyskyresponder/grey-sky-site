@@ -64,7 +64,6 @@ The `users` table (DOC-002) already has: `id`, `email`, `first_name`, `last_name
 | Column | Type | Nullable | Default | Description |
 |--------|------|----------|---------|-------------|
 | `preferred_name` | `varchar(100)` | YES | NULL | What they want to be called. Many responders go by callsigns or shortened names. |
-| `pronouns` | `varchar(50)` | YES | NULL | Respectful inclusion. |
 | `date_of_birth` | `date` | YES | NULL | For credential verification. Never displayed publicly. |
 | `service_start_year` | `integer` | YES | NULL | "How long have you been doing this work?" Year they entered emergency management/public safety. |
 | `primary_discipline` | `varchar(100)` | YES | NULL | Their primary RTLT discipline slug. What they'd say first if asked "what do you do?" |
@@ -194,7 +193,6 @@ export interface UserProfile {
   first_name: string | null;
   last_name: string | null;
   preferred_name: string | null;
-  pronouns: string | null;
   phone: string | null;
   date_of_birth: string | null; // ISO date string — never exposed outside profile edit
   location_city: string | null;
@@ -329,7 +327,7 @@ src/components/profile/LanguagesSection.tsx               — Languages spoken
 src/components/profile/AffinitiesSection.tsx              — Affinity tags grouped by category
 
 src/components/profile/edit/ProfileEditForm.tsx           — Multi-section edit container with save-per-section
-src/components/profile/edit/BasicInfoForm.tsx             — Name, contact, location, pronouns
+src/components/profile/edit/BasicInfoForm.tsx             — Name, contact, location
 src/components/profile/edit/ServiceIdentityForm.tsx       — Discipline, start year, service statement
 src/components/profile/edit/CommunityEditor.tsx           — Add/edit/remove communities
 src/components/profile/edit/OrgEditor.tsx                 — Add/edit/remove service organizations
@@ -435,7 +433,6 @@ These implicit connections are NOT stored in `user_affinities`. They are compute
 
 - `first_name`, `last_name`: 1-100 chars, no special characters beyond hyphens and apostrophes.
 - `preferred_name`: 1-100 chars, same constraints.
-- `pronouns`: 1-50 chars, free text.
 - `service_start_year`: 1950 to current year. Cannot be in the future.
 - `service_statement`: max 500 chars. No minimum for saving; completeness requires ≥ 50.
 - `community_name`: 1-200 chars.
@@ -485,7 +482,7 @@ The profile edit form uses section headers that speak to the member's identity, 
 3. Profile completeness trigger on `users` table recomputes `profile_completeness` on UPDATE and returns correct score based on the weight table.
 4. `/dashboard/profile` renders all profile sections with data from the database. Empty sections show encouraging placeholder copy.
 5. `/dashboard/profile/edit` renders multi-section edit form. Each section saves independently (no single giant submit button).
-6. Basic Info form saves `first_name`, `last_name`, `preferred_name`, `pronouns`, `phone`, `location_city`, `location_state`, `location_country` to `users` table.
+6. Basic Info form saves `first_name`, `last_name`, `preferred_name`, `phone`, `location_city`, `location_state`, `location_country` to `users` table.
 7. Service Identity form saves `primary_discipline` (dropdown from RTLT disciplines), `secondary_disciplines` (multi-select), `service_start_year`, `service_statement` to `users` table.
 8. Community editor supports add, edit, remove. Dropdown for `relationship` type. State selector for US states. `is_current` toggle.
 9. Organization editor supports add, edit, remove. Free-text org name with optional link to existing `organizations` table. `is_primary` toggle (only one at a time). `is_current` toggle.
@@ -563,7 +560,6 @@ Create `supabase/migrations/20260411000002_user_profile_expansion.sql`:
 -- ============================================================
 
 ALTER TABLE users ADD COLUMN IF NOT EXISTS preferred_name varchar(100);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS pronouns varchar(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS date_of_birth date;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS service_start_year integer;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS primary_discipline varchar(100);
@@ -908,7 +904,7 @@ Create `src/lib/types/profile.ts` with the exact TypeScript interfaces defined i
 ### Step 3: Create Zod Validators
 
 Create `src/lib/validators/profile.ts` with Zod schemas for:
-- `basicInfoSchema` — first_name, last_name, preferred_name, pronouns, phone, location_city, location_state, location_country
+- `basicInfoSchema` — first_name, last_name, preferred_name, phone, location_city, location_state, location_country
 - `serviceIdentitySchema` — primary_discipline, secondary_disciplines, service_start_year, service_statement
 - `communitySchema` — community_name (required), state, country, relationship (required, enum), start_year, end_year, is_current, notes
 - `serviceOrgSchema` — organization_name (required), organization_id (optional uuid), organization_type, role_title, start_year, end_year, is_current, is_primary
@@ -987,7 +983,7 @@ Key implementation notes:
 - Back button at top: "← Back to Profile" linking to `/dashboard/profile`.
 
 **`src/components/profile/edit/BasicInfoForm.tsx`**
-- Fields: first_name, last_name, preferred_name, pronouns, phone, location_city, location_state (US state dropdown), location_country (country dropdown, default USA).
+- Fields: first_name, last_name, preferred_name, phone, location_city, location_state (US state dropdown), location_country (country dropdown, default USA).
 - Section header: "You" / "The basics. How you want to be known."
 - Save button: "Save" — calls `updateBasicInfo()`.
 
