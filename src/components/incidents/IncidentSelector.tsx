@@ -23,7 +23,6 @@ function formatDate(dateStr: string): string {
 }
 
 export default function IncidentSelector({
-  selectedId,
   onSelect,
   onClear,
 }: {

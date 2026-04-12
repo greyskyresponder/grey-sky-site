@@ -42,6 +42,7 @@ export default async function PublicIncidentDetailPage({
           {/* Hero Image */}
           {incident.hero_image_url && (
             <div className="mb-8 rounded-xl overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={incident.hero_image_url}
                 alt={incident.name}

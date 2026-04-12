@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Search, Plus } from 'lucide-react';
 import { searchIncidents } from '@/lib/actions/incidents';
@@ -34,7 +34,6 @@ export default function IncidentSearch({
   initialResults: IncidentSummary[];
   initialTotal: number;
 }) {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [query, setQuery] = useState(searchParams.get('query') ?? '');

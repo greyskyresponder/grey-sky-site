@@ -53,6 +53,7 @@ export function AvatarUpload({ currentUrl, firstName, lastName }: Props) {
   return (
     <div className="flex items-center gap-4">
       {preview ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={preview}
           alt=""

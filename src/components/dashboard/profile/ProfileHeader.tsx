@@ -16,6 +16,7 @@ export function ProfileHeader({ profile }: { profile: MemberProfile }) {
     <div className="bg-white rounded-lg shadow-sm border border-[var(--gs-cloud)] p-6">
       <div className="flex items-start gap-5">
         {profile.avatarUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={profile.avatarUrl}
             alt=""

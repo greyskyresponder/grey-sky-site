@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { US_STATES } from '@/lib/constants/states';
-import { updateProfileAction, uploadAvatarAction } from '@/lib/actions/profile';
+import { updateProfileAction } from '@/lib/actions/profile';
 import type { MemberProfile, UserAffinityDetail } from '@/lib/types/profile';
 import type { Affinity } from '@/lib/types/taxonomy';
 import { AffinitySelector } from './AffinitySelector';

@@ -50,6 +50,7 @@ export default function UserBadge({
   return (
     <div className="flex items-center gap-3 px-4 py-4">
       {avatarUrl ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={avatarUrl}
           alt={displayName}
