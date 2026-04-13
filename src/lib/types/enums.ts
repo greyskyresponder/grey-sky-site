@@ -85,16 +85,31 @@ export type SkyPointsTransactionType =
   | 'admin_adjustment'
   | 'sponsor_credit';
 
-/** C2: documents.category */
+/** C2: documents.category (expanded in DOC-206) */
 export type DocumentCategory =
+  | 'certification'
+  | 'training'
+  | 'deployment'
+  | 'identification'
+  | 'medical'
+  | 'assessment'
+  | 'correspondence'
+  | 'membership'
+  | 'other'
+  // Legacy values from DOC-002
   | 'certificate'
   | 'license'
   | 'training_record'
   | 'assessment_report'
   | 'field_report'
   | 'self_assessment'
-  | 'photo_id'
-  | 'other';
+  | 'photo_id';
+
+/** C2b: documents.verification_status (DOC-206) */
+export type DocumentVerificationStatus = 'uploaded' | 'reviewed' | 'verified' | 'rejected';
+
+/** C2c: documents.status (DOC-206) */
+export type DocumentStatus = 'active' | 'archived' | 'deleted';
 
 /** C3: documents.upload_status */
 export type UploadStatus = 'pending' | 'processed' | 'failed';

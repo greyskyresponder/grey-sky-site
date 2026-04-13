@@ -32,6 +32,8 @@ export type {
   TeamMemberCertificationStatus,
   AffinityCategory,
   ActorType,
+  DocumentVerificationStatus,
+  DocumentStatus,
 } from './enums';
 
 export type {
@@ -53,6 +55,8 @@ export type { SkyPointsLedgerEntry } from './economy';
 
 export type {
   Document,
+  DocumentSummary,
+  DocumentUploadInput,
   CertificationPathway,
   UserCertification,
 } from './documents';
@@ -92,6 +96,14 @@ export type {
   UserAffinityDetail,
   ProfileStats,
   ProfileUpdatePayload,
+  UserProfile,
+  UserCommunity,
+  UserServiceOrg,
+  UserTeam,
+  UserQualification,
+  UserLanguage,
+  UserAffinity as UserAffinityExpanded,
+  ProfileSection,
 } from './profile';
 
 export type {
