@@ -2,6 +2,7 @@
 // TODO: test — authenticated access renders DashboardLayoutClient with correct user props
 import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/auth/getUser';
+import { getBalance } from '@/lib/coins/actions';
 import DashboardLayoutClient from './DashboardLayoutClient';
 
 export default async function DashboardLayout({
@@ -30,8 +31,14 @@ export default async function DashboardLayout({
     email: session.user.email || '',
   };
 
+  const coinBalance = await getBalance(session.user.id);
+
   return (
-    <DashboardLayoutClient sidebarUser={sidebarUser}>
+    <DashboardLayoutClient
+      sidebarUser={sidebarUser}
+      coinBalance={coinBalance.balance}
+      coinsFrozen={coinBalance.frozen}
+    >
       {children}
     </DashboardLayoutClient>
   );

@@ -2,15 +2,20 @@
 
 import { Menu, Bell } from 'lucide-react';
 import Link from 'next/link';
+import CoinBadge from '@/components/coins/CoinBadge';
 
 type DashboardHeaderProps = {
   pageTitle: string;
   onMobileMenuToggle: () => void;
+  coinBalance?: number;
+  coinsFrozen?: boolean;
 };
 
 export default function DashboardHeader({
   pageTitle,
   onMobileMenuToggle,
+  coinBalance,
+  coinsFrozen,
 }: DashboardHeaderProps) {
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4 lg:px-6">
@@ -45,6 +50,9 @@ export default function DashboardHeader({
 
       {/* Quick actions */}
       <div className="flex items-center gap-3">
+        {coinBalance !== undefined && (
+          <CoinBadge balance={coinBalance} frozen={coinsFrozen} />
+        )}
         {/* Notification bell — placeholder */}
         <button
           className="relative text-gray-400 hover:text-gray-600 transition-colors"

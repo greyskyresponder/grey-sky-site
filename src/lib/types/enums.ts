@@ -76,14 +76,22 @@ export type EvaluationRequestStatus = 'pending' | 'completed' | 'denied' | 'expi
 
 // ── Group C: Economy & Documents ────────────────────────
 
-/** C1: sky_points_ledger.transaction_type */
-export type SkyPointsTransactionType =
-  | 'membership_credit'
+/** C1: coin_transactions.type (DOC-205) */
+export type CoinTransactionType =
+  | 'membership_grant'
   | 'purchase'
   | 'spend'
+  | 'earn_validation'
+  | 'earn_evaluation'
+  | 'earn_qrb_review'
   | 'refund'
   | 'admin_adjustment'
-  | 'sponsor_credit';
+  | 'pending_transfer'
+  | 'freeze'
+  | 'unfreeze';
+
+/** @deprecated Use CoinTransactionType — kept for migration compatibility */
+export type SkyPointsTransactionType = CoinTransactionType;
 
 /** C2: documents.category (expanded in DOC-206) */
 export type DocumentCategory =

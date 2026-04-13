@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
   { label: 'Response Reports', href: '/dashboard/records', icon: FileText },
   { label: 'Incidents', href: '/dashboard/incidents', icon: MapPin },
   { label: 'Profile', href: '/dashboard/profile', icon: User },
-  { label: 'Sky Points', href: '/dashboard/points', icon: Coins },
+  { label: 'Sky Coins', href: '/dashboard/coins', icon: Coins },
   { label: 'Documents', href: '/dashboard/documents', icon: FolderOpen },
   { label: 'Certifications', href: '/dashboard/certifications', icon: Award },
 ];

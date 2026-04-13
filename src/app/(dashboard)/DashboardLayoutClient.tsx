@@ -19,16 +19,20 @@ const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/dashboard/records': 'Response Reports',
   '/dashboard/profile': 'Profile',
-  '/dashboard/points': 'Sky Points',
+  '/dashboard/coins': 'Sky Coins',
   '/dashboard/documents': 'Documents',
   '/dashboard/certifications': 'Certifications',
 };
 
 export default function DashboardLayoutClient({
   sidebarUser,
+  coinBalance,
+  coinsFrozen,
   children,
 }: {
   sidebarUser: SidebarUser;
+  coinBalance?: number;
+  coinsFrozen?: boolean;
   children: React.ReactNode;
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -53,6 +57,8 @@ export default function DashboardLayoutClient({
         <DashboardHeader
           pageTitle={pageTitle}
           onMobileMenuToggle={() => setMobileMenuOpen(true)}
+          coinBalance={coinBalance}
+          coinsFrozen={coinsFrozen}
         />
 
         <main className="flex-1 p-4 lg:p-6 pb-20 lg:pb-6">

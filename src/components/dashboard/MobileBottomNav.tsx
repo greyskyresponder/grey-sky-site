@@ -22,7 +22,7 @@ const bottomNavItems: BottomNavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Reports', href: '/dashboard/records', icon: FileText },
   { label: 'Profile', href: '/dashboard/profile', icon: User },
-  { label: 'Points', href: '/dashboard/points', icon: Coins },
+  { label: 'Coins', href: '/dashboard/coins', icon: Coins },
   { label: 'Certs', href: '/dashboard/certifications', icon: Award },
 ];
 

@@ -17,6 +17,7 @@ export type {
   ValidationRequestStatus,
   EvaluationRequestStatus,
   SkyPointsTransactionType,
+
   DocumentCategory,
   UploadStatus,
   CertificationPathwayStatus,
@@ -51,7 +52,19 @@ export type {
   EvaluationRequest,
 } from './deployments';
 
-export type { SkyPointsLedgerEntry } from './economy';
+export type {
+  CoinTransactionType,
+  ProductCategory,
+  CertificationTier,
+  CredentialingTier,
+  CoinAccount,
+  CoinTransaction,
+  CoinProduct,
+  CoinPurchasePackage,
+  CoinBalance,
+  CoinLedgerEntry,
+  PositionPricing,
+} from './economy';
 
 export type {
   Document,
