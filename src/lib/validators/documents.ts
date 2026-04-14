@@ -6,8 +6,11 @@ import { z } from 'zod';
 
 const documentCategories = [
   'certification', 'training', 'deployment', 'identification',
-  'medical', 'assessment', 'correspondence', 'membership', 'other',
+  'medical', 'assessment', 'correspondence', 'membership', 'avatar', 'other',
 ] as const;
+
+export const avatarUploadMimeTypes = ['image/jpeg', 'image/png', 'image/webp'] as const;
+export const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
 
 export const documentUploadSchema = z.object({
   title: z.string().max(300).optional().or(z.literal('')),

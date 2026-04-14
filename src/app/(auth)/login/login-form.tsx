@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { loginSchema } from '@/lib/validators/auth';
+import { MfaChallenge } from '@/components/auth/MfaChallenge';
 import { signIn } from './actions';
 
 const inputClass =
@@ -12,9 +13,11 @@ const labelClass =
   'block text-sm font-medium text-[var(--gs-steel)] mb-1.5';
 
 export default function LoginForm() {
+  const router = useRouter();
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mfaRedirectTo, setMfaRedirectTo] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') ?? undefined;
   const callbackError = searchParams.get('error');
@@ -45,11 +48,28 @@ export default function LoginForm() {
 
     const result = await signIn(form, redirectTo);
 
-    if (result?.error) {
+    if (result && 'error' in result) {
       setServerError(result.error);
       setLoading(false);
+      return;
+    }
+    if (result && 'mfaRequired' in result) {
+      setMfaRedirectTo(result.redirectTo);
+      setLoading(false);
+      return;
     }
     // If no error, signIn calls redirect() — this component unmounts
+  }
+
+  if (mfaRedirectTo) {
+    return (
+      <MfaChallenge
+        onSuccess={() => {
+          router.replace(mfaRedirectTo);
+          router.refresh();
+        }}
+      />
+    );
   }
 
   return (

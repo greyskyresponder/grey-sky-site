@@ -1,11 +1,19 @@
-// TODO: Tests needed — successful login with redirect, failed login, open redirect prevention, Zod validation
+// TODO: Tests needed — successful login with redirect, failed login, open redirect prevention,
+// MFA required path, Zod validation, rate limit.
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { loginSchema } from '@/lib/validators/auth';
 
-export async function signIn(formData: FormData, redirectTo?: string) {
+type SignInResult =
+  | { error: string }
+  | { mfaRequired: true; redirectTo: string };
+
+export async function signIn(
+  formData: FormData,
+  redirectTo?: string,
+): Promise<SignInResult | void> {
   const raw = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -27,11 +35,21 @@ export async function signIn(formData: FormData, redirectTo?: string) {
     return { error: 'Invalid email or password' };
   }
 
-  // Only allow relative paths to prevent open redirect attacks
   const safeRedirect =
     redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
       ? redirectTo
       : '/dashboard';
+
+  const { data: aal } =
+    await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+  if (
+    aal &&
+    aal.nextLevel === 'aal2' &&
+    aal.currentLevel !== 'aal2'
+  ) {
+    return { mfaRequired: true, redirectTo: safeRedirect };
+  }
 
   redirect(safeRedirect);
 }

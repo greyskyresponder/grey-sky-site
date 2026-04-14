@@ -1,6 +1,6 @@
 // TODO: test — renders thumbnail, title, category badge, date, verification badge, file size
 import Link from 'next/link';
-import { FileText, Image } from 'lucide-react';
+import { FileText, Image as ImageIcon } from 'lucide-react';
 import type { DocumentSummary } from '@/lib/types/documents';
 
 const categoryLabels: Record<string, string> = {
@@ -39,7 +39,7 @@ export default function DocumentCard({ doc }: { doc: DocumentSummary }) {
     >
       <div className="flex items-center justify-center h-24 bg-[var(--gs-cloud)]/30 rounded mb-3">
         {isImage ? (
-          <Image className="w-10 h-10 text-[var(--gs-steel)]" />
+          <ImageIcon aria-hidden className="w-10 h-10 text-[var(--gs-steel)]" />
         ) : (
           <FileText className="w-10 h-10 text-[var(--gs-steel)]" />
         )}

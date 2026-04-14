@@ -103,6 +103,7 @@ export type DocumentCategory =
   | 'assessment'
   | 'correspondence'
   | 'membership'
+  | 'avatar'
   | 'other'
   // Legacy values from DOC-002
   | 'certificate'

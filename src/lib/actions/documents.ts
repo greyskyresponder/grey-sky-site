@@ -9,7 +9,13 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { documentUploadSchema, documentUpdateSchema, documentFilterSchema } from '@/lib/validators/documents';
+import {
+  documentUploadSchema,
+  documentUpdateSchema,
+  documentFilterSchema,
+  avatarUploadMimeTypes,
+  AVATAR_MAX_BYTES,
+} from '@/lib/validators/documents';
 import type { Document, DocumentSummary } from '@/lib/types/documents';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic'];
@@ -356,4 +362,125 @@ export async function unlinkDocument(docId: string, linkType: 'qualification' | 
   revalidatePath('/dashboard/documents');
   revalidatePath('/dashboard/profile');
   return { error: null };
+}
+
+// ── Hard delete (removes storage object + row; clears avatar_url if avatar) ──
+
+export async function deleteDocument(id: string): Promise<{ error: string | null }> {
+  const userId = await getAuthUserId();
+  if (!userId) return { error: 'Not authenticated' };
+
+  const supabase = await createClient();
+
+  const { data: doc, error: fetchError } = await supabase
+    .from('documents')
+    .select('storage_path, storage_bucket, category, linked_qualification_id')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single();
+
+  if (fetchError || !doc) return { error: 'Document not found' };
+
+  if (doc.linked_qualification_id) {
+    await supabase
+      .from('user_qualifications')
+      .update({ document_id: null, verification_status: 'self_reported' })
+      .eq('id', doc.linked_qualification_id)
+      .eq('user_id', userId);
+  }
+
+  await supabase.storage.from(doc.storage_bucket).remove([doc.storage_path]);
+
+  const { error: deleteError } = await supabase
+    .from('documents')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', userId);
+
+  if (deleteError) return { error: deleteError.message };
+
+  if (doc.category === 'avatar') {
+    await supabase.from('users').update({ avatar_url: null }).eq('id', userId);
+  }
+
+  revalidatePath('/dashboard/documents');
+  revalidatePath('/dashboard/profile');
+  return { error: null };
+}
+
+// ── Avatar upload (public bucket, updates users.avatar_url) ──
+
+export async function uploadAvatar(
+  formData: FormData
+): Promise<{ url: string | null; error: string | null }> {
+  const userId = await getAuthUserId();
+  if (!userId) return { url: null, error: 'Not authenticated' };
+
+  const file = formData.get('file') as File;
+  if (!file || file.size === 0) return { url: null, error: 'No file provided' };
+  if (file.size > AVATAR_MAX_BYTES) return { url: null, error: 'Avatar must be under 5 MB' };
+  if (!(avatarUploadMimeTypes as readonly string[]).includes(file.type)) {
+    return { url: null, error: 'Avatar must be JPEG, PNG, or WebP' };
+  }
+
+  const supabase = await createClient();
+
+  // Remove any prior avatar (storage + documents rows).
+  const { data: priorAvatars } = await supabase
+    .from('documents')
+    .select('id, storage_path, storage_bucket')
+    .eq('user_id', userId)
+    .eq('category', 'avatar');
+
+  if (priorAvatars && priorAvatars.length > 0) {
+    const paths = priorAvatars
+      .filter((a) => a.storage_bucket === 'avatars')
+      .map((a) => a.storage_path);
+    if (paths.length > 0) {
+      await supabase.storage.from('avatars').remove(paths);
+    }
+    await supabase
+      .from('documents')
+      .delete()
+      .eq('user_id', userId)
+      .eq('category', 'avatar');
+  }
+
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
+  const avatarUuid = crypto.randomUUID();
+  const storagePath = `${userId}/${avatarUuid}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('avatars')
+    .upload(storagePath, file, { contentType: file.type, upsert: false });
+
+  if (uploadError) return { url: null, error: uploadError.message };
+
+  const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(storagePath);
+  const publicUrl = publicUrlData.publicUrl;
+
+  const { error: dbError } = await supabase.from('documents').insert({
+    user_id: userId,
+    file_name: file.name,
+    file_type: file.type,
+    file_size: file.size,
+    storage_path: storagePath,
+    storage_bucket: 'avatars',
+    category: 'avatar',
+  });
+
+  if (dbError) {
+    await supabase.storage.from('avatars').remove([storagePath]);
+    return { url: null, error: dbError.message };
+  }
+
+  const { error: userError } = await supabase
+    .from('users')
+    .update({ avatar_url: publicUrl })
+    .eq('id', userId);
+
+  if (userError) return { url: null, error: userError.message };
+
+  revalidatePath('/dashboard/profile');
+  return { url: publicUrl, error: null };
 }

@@ -4,6 +4,7 @@ const quickLinks = [
   { href: "/positions", label: "RTLT Positions" },
   { href: "/teams", label: "Team Types" },
   { href: "/standards", label: "Standards" },
+  { href: "/organizations", label: "For Agencies" },
   { href: "/about", label: "About" },
   { href: "/join", label: "Tell Your Story" },
   { href: "/login", label: "Member Login" },

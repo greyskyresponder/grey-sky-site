@@ -1,25 +1,24 @@
 'use client';
 
+import Link from 'next/link';
+
 export function MfaToggle() {
   return (
-    <div className="flex items-center justify-between rounded-lg border border-[var(--gs-cloud)] bg-[var(--gs-white)] px-4 py-3 opacity-60">
+    <Link
+      href="/dashboard/settings/security"
+      className="flex items-center justify-between rounded-lg border border-[var(--gs-cloud)] bg-[var(--gs-white)] px-4 py-3 hover:border-[var(--gs-gold)] transition-colors"
+    >
       <div>
         <p className="text-sm font-medium text-[var(--gs-navy)]">
           Multi-factor authentication
         </p>
-        <p className="text-xs text-[var(--gs-steel)]">Coming soon</p>
+        <p className="text-xs text-[var(--gs-steel)]">
+          Manage two-factor authentication
+        </p>
       </div>
-      <button
-        type="button"
-        disabled
-        aria-label="Multi-factor authentication (coming soon)"
-        className="relative inline-flex h-6 w-11 shrink-0 cursor-not-allowed rounded-full border-2 border-transparent bg-[var(--gs-cloud)] transition-colors"
-      >
-        <span
-          aria-hidden="true"
-          className="pointer-events-none inline-block h-5 w-5 translate-x-0 rounded-full bg-white shadow ring-0 transition-transform"
-        />
-      </button>
-    </div>
+      <span className="text-sm text-[var(--gs-gold)] font-medium">
+        Manage →
+      </span>
+    </Link>
   );
 }

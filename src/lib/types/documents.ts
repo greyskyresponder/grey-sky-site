@@ -33,6 +33,8 @@ export interface Document {
   reviewed_by: string | null;
   reviewed_at: string | null;
   status: DocumentStatus;
+  thumbnail_path: string | null;
+  tags: string[];
   created_at: string;
   updated_at: string;
   // Legacy fields from DOC-002 (may not exist on new rows)
