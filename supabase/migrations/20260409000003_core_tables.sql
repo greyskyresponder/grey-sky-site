@@ -16,6 +16,7 @@ CREATE TABLE users (
   bio           TEXT,
   avatar_url    TEXT,
   mfa_enabled   BOOLEAN NOT NULL DEFAULT false,
+  role          TEXT NOT NULL DEFAULT 'member',
   membership_status   membership_status_enum NOT NULL DEFAULT 'none',
   membership_paid_by  membership_paid_by_enum NOT NULL DEFAULT 'self',
   membership_expires_at TIMESTAMPTZ,

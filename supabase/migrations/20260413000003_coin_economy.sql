@@ -59,7 +59,7 @@ CREATE TABLE coin_products (
   code TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   description TEXT,
-  tier INTEGER NOT NULL CHECK (tier BETWEEN 1 AND 5),
+  tier INTEGER NOT NULL CHECK (tier BETWEEN 0 AND 5),
   cost_coins INTEGER NOT NULL DEFAULT 0,
   earn_coins INTEGER NOT NULL DEFAULT 0,
   category TEXT NOT NULL,
