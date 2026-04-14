@@ -1,7 +1,7 @@
 // TODO: test — unauthenticated access redirects to /login?redirect=/dashboard
 // TODO: test — authenticated access renders DashboardLayoutClient with correct user props
 import { redirect } from 'next/navigation';
-import { getUser } from '@/lib/auth/getUser';
+import { getUserOrPartial } from '@/lib/auth/getUser';
 import { getBalance } from '@/lib/coins/actions';
 import DashboardLayoutClient from './DashboardLayoutClient';
 
@@ -10,10 +10,35 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getUser();
+  const session = await getUserOrPartial();
 
+  // Not authenticated at all — redirect to login
   if (!session) {
     redirect('/login?redirect=/dashboard');
+  }
+
+  // Authenticated but profile row missing (trigger not applied, RLS issue, etc.)
+  // Show a fallback instead of redirecting to /login (which would cause a redirect loop)
+  if (!session.profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--gs-cloud,#F4F5F7)]">
+        <div className="max-w-md w-full p-8 bg-white rounded-lg shadow-sm text-center">
+          <h1 className="text-xl font-semibold text-[var(--gs-navy,#0A1628)] mb-4">
+            Account Setup In Progress
+          </h1>
+          <p className="text-[var(--gs-steel,#6B7280)] mb-6">
+            Your account was created but your profile is still being set up.
+            Please try refreshing in a moment. If this persists, contact support.
+          </p>
+          <a
+            href="/dashboard"
+            className="inline-block px-6 py-2.5 bg-[var(--gs-navy,#0A1628)] text-white font-semibold rounded transition-colors hover:bg-[var(--gs-gold,#C5933A)] hover:text-[var(--gs-navy,#0A1628)]"
+          >
+            Retry
+          </a>
+        </div>
+      </div>
+    );
   }
 
   const { profile } = session;
