@@ -10,7 +10,7 @@ export const metadata = {
 
 export default async function PurchasePage() {
   const session = await getUser();
-  if (!session) redirect('/auth/login?redirect=/dashboard/coins/purchase');
+  if (!session) redirect('/login?redirect=/dashboard/coins/purchase');
 
   return (
     <div className="max-w-4xl">

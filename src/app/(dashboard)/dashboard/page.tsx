@@ -12,7 +12,7 @@ import QuickActionPanel from '@/components/dashboard/QuickActionPanel';
 export default async function DashboardPage() {
   const session = await getUser();
   if (!session) {
-    redirect('/auth/login?redirect=/dashboard');
+    redirect('/login?redirect=/dashboard');
   }
 
   const { profile } = session;

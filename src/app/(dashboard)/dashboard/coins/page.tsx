@@ -12,7 +12,7 @@ export const metadata = {
 
 export default async function CoinsPage() {
   const session = await getUser();
-  if (!session) redirect('/auth/login?redirect=/dashboard/coins');
+  if (!session) redirect('/login?redirect=/dashboard/coins');
 
   const [balance, history, products] = await Promise.all([
     getBalance(session.user.id),

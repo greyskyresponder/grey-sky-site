@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function SecuritySettingsPage() {
   const session = await getUser();
-  if (!session) redirect('/auth/login?redirect=/dashboard/settings/security');
+  if (!session) redirect('/login?redirect=/dashboard/settings/security');
 
   return (
     <div className="max-w-2xl space-y-8">

@@ -1,4 +1,4 @@
-// TODO: test — unauthenticated access redirects to /auth/login?redirect=/dashboard
+// TODO: test — unauthenticated access redirects to /login?redirect=/dashboard
 // TODO: test — authenticated access renders DashboardLayoutClient with correct user props
 import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/auth/getUser';
@@ -13,7 +13,7 @@ export default async function DashboardLayout({
   const session = await getUser();
 
   if (!session) {
-    redirect('/auth/login?redirect=/dashboard');
+    redirect('/login?redirect=/dashboard');
   }
 
   const { profile } = session;
