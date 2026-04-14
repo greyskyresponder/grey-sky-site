@@ -2,30 +2,14 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ServiceLane } from "@/components/marketing/ServiceLane";
-import { ReferenceClient } from "@/components/marketing/ReferenceClient";
 import { AgencyCtaSection } from "@/components/marketing/AgencyCtaSection";
+import { disciplines } from "@/lib/disciplines";
 
 export const metadata: Metadata = {
   title: "For Organizations + Agencies | Grey Sky Responder Society",
   description:
     "Sponsor your responders and credential your specialty response teams with Grey Sky.",
 };
-
-const srtDisciplines = [
-  { name: "Urban Search & Rescue", abbr: "US&R" },
-  { name: "Swiftwater/Flood Rescue", abbr: "SWFRT" },
-  { name: "Hazardous Materials", abbr: "HazMat" },
-  { name: "SWAT", abbr: "SWAT" },
-  { name: "Bomb Squad", abbr: "EOD" },
-  { name: "Waterborne SAR", abbr: "WB-SAR" },
-  { name: "Land SAR", abbr: "LSAR" },
-  { name: "Small Unmanned Aircraft Systems", abbr: "sUAS" },
-  { name: "Rotary Wing SAR", abbr: "RW-SAR" },
-  { name: "Animal Rescue/SAR", abbr: "AR-SAR" },
-  { name: "Incident Management Teams", abbr: "IMT" },
-  { name: "EOC Management Support Teams", abbr: "EOC-MST" },
-  { name: "Public Safety Dive Teams", abbr: "PSDT" },
-];
 
 const processSteps = [
   {
@@ -145,7 +129,7 @@ export default function OrganizationsPage() {
               variant="secondary"
               eyebrow="Lane B"
               headline="Specialty Response Team Assessment + Credentialing"
-              body="Longview Solutions Group delivers the SRT-CAP (Specialty Response Team Capabilities Assessment Program) — a structured methodology that evaluates team readiness across 11 operational areas, assigns FEMA RTLT typing levels, and credentials individual team members. Currently under contract with the Florida Division of Emergency Management across 13 SRT disciplines statewide."
+              body="Longview Solutions Group delivers the SRT-CAP (Specialty Response Team Capabilities Assessment Program) — a structured methodology that evaluates team readiness across 11 operational areas, assigns FEMA RTLT typing levels, and credentials individual team members across every discipline defined in the FEMA Resource Typing Library Tool."
               points={[
                 "Structured self-assessment collection (11 sections)",
                 "Onsite expert assessment by qualified assessors",
@@ -198,7 +182,7 @@ export default function OrganizationsPage() {
         </div>
       </section>
 
-      {/* 13 SRT Disciplines */}
+      {/* FEMA RTLT Disciplines */}
       <section className="py-20 bg-[var(--gs-white)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -206,17 +190,18 @@ export default function OrganizationsPage() {
               Scope of Coverage
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-[var(--gs-navy)] mb-4">
-              13 SRT Disciplines
+              FEMA RTLT Disciplines
             </h2>
             <p className="text-lg text-[var(--gs-steel)] max-w-2xl mx-auto">
-              The specialty response team types credentialed under the active Florida engagement.
+              Grey Sky credentials teams across every discipline defined in the FEMA Resource
+              Typing Library Tool.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {srtDisciplines.map((d, i) => (
+            {disciplines.map((d, i) => (
               <div
-                key={d.name}
+                key={d.slug}
                 className="flex items-center gap-4 p-4 rounded-lg bg-[var(--gs-cloud)]/40 border border-[var(--gs-cloud)]"
               >
                 <div className="w-9 h-9 rounded-md bg-[var(--gs-navy)] flex items-center justify-center shrink-0">
@@ -231,16 +216,8 @@ export default function OrganizationsPage() {
               </div>
             ))}
           </div>
-
-          <p className="mt-8 text-center text-[var(--gs-steel)] italic text-sm max-w-3xl mx-auto">
-            Grey Sky supports credentialing for ALL team types defined in the FEMA Resource Typing
-            Library Tool — not limited to the 13 Florida SRT disciplines listed above.
-          </p>
         </div>
       </section>
-
-      {/* Florida FDEM Reference Client */}
-      <ReferenceClient />
 
       {/* Why Grey Sky */}
       <section className="py-20 bg-[var(--gs-white)]">
