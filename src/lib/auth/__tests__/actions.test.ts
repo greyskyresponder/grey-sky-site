@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- Supabase auth mocks require type coercion for discriminated union returns */
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createMockSupabaseClient, type MockSupabaseClient } from '@/test/utils/supabase-mock';
 import { buildFormData, mockAuthUser } from '@/test/utils/auth-helpers';
