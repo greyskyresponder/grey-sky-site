@@ -1,4 +1,3 @@
-// TODO: Tests needed — successful signup, duplicate email, validation errors, optional field updates
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
@@ -27,6 +26,8 @@ export async function signUp(formData: FormData) {
 
   const supabase = await createClient();
 
+  const GENERIC_ERROR = 'Unable to create account. Please try again.';
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -36,11 +37,15 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: GENERIC_ERROR };
   }
 
-  // If phone or location_state provided, update public.users via admin client
-  // (the trigger only sets first_name, last_name, email)
+  // Supabase returns an empty identities array when the email is already in use.
+  // Respond identically to the fresh-signup path so attackers cannot enumerate users.
+  if (data.user?.identities?.length === 0) {
+    return { success: true, confirmEmail: true };
+  }
+
   if (data.user && (phone || location_state)) {
     const admin = createAdminClient();
     const updates: Record<string, string> = {};
@@ -50,16 +55,9 @@ export async function signUp(formData: FormData) {
     await admin.from('users').update(updates).eq('id', data.user.id);
   }
 
-  // Check if email confirmation is required
-  if (data.user?.identities?.length === 0) {
-    return { error: 'An account with this email already exists' };
-  }
-
   if (data.session) {
-    // Email confirmation disabled — user is signed in immediately
     return { success: true, redirect: '/dashboard' };
   }
 
-  // Email confirmation enabled — user needs to check email
   return { success: true, confirmEmail: true };
 }

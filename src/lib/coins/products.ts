@@ -8,13 +8,19 @@ export const COIN_EXCHANGE_RATE = 10;
 /** Annual membership grants 1,000 Sky Coins */
 export const ANNUAL_MEMBERSHIP_COINS = 1000;
 
+/** Smallest purchase package */
+export const MIN_PURCHASE_COINS = 250;
+
+/** Largest purchase package */
+export const MAX_PURCHASE_COINS = 10000;
+
 /** Purchase packages available to members */
 export const PURCHASE_PACKAGES: CoinPurchasePackage[] = [
-  { code: 'purchase_250', coins: 250, priceUsd: 25, stripePriceId: '' },
-  { code: 'purchase_500', coins: 500, priceUsd: 50, stripePriceId: '' },
-  { code: 'purchase_1000', coins: 1000, priceUsd: 100, stripePriceId: '' },
-  { code: 'purchase_2500', coins: 2500, priceUsd: 250, stripePriceId: '' },
-  { code: 'purchase_5000', coins: 5000, priceUsd: 500, stripePriceId: '' },
+  { code: 'purchase_250', coins: 250, priceUsd: 25, label: '250 Sky Coins', stripePriceId: '' },
+  { code: 'purchase_500', coins: 500, priceUsd: 50, label: '500 Sky Coins', stripePriceId: '' },
+  { code: 'purchase_1000', coins: 1000, priceUsd: 100, label: '1,000 Sky Coins', stripePriceId: '' },
+  { code: 'purchase_2500', coins: 2500, priceUsd: 250, label: '2,500 Sky Coins', stripePriceId: '' },
+  { code: 'purchase_5000', coins: 5000, priceUsd: 500, label: '5,000 Sky Coins', stripePriceId: '' },
 ];
 
 /** Format a coin amount for display: 1000 → "1,000 Sky Coins" */

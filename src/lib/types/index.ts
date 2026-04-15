@@ -93,6 +93,12 @@ export type {
 export type { AuditLogEntry } from './audit';
 
 export type {
+  StripeSubscriptionStatus,
+  MembershipInfo,
+  StripeCheckoutResult,
+} from './stripe';
+
+export type {
   Incident as IncidentFull,
   IncidentUpdate,
   IncidentSummary as IncidentSummaryFull,

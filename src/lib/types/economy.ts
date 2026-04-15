@@ -72,6 +72,7 @@ export interface CoinPurchasePackage {
   code: string;
   coins: number;
   priceUsd: number;
+  label: string;
   stripePriceId: string;
 }
 

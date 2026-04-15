@@ -1,4 +1,3 @@
-// TODO: Tests needed — reset email sent, password update success, validation errors
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
@@ -15,13 +14,11 @@ export async function resetPassword(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.resetPasswordForEmail(result.data.email, {
+  // Never differentiate between "email exists" and "email doesn't exist" — this
+  // endpoint must respond identically in all cases to prevent user enumeration.
+  await supabase.auth.resetPasswordForEmail(result.data.email, {
     redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`,
   });
-
-  if (error) {
-    return { error: error.message };
-  }
 
   return { success: true };
 }

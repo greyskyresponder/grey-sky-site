@@ -15,6 +15,7 @@ const envSchema = z.object({
   // ── Stripe ─────────────────────────────────────────────────
   STRIPE_SECRET_KEY: z.string().startsWith('sk_'),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_'),
+  STRIPE_MEMBERSHIP_PRICE_ID: z.string().startsWith('price_'),
   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith('pk_'),
 
   // ── Email ──────────────────────────────────────────────────

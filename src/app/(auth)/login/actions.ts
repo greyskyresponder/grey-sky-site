@@ -1,5 +1,3 @@
-// TODO: Tests needed — successful login with redirect, failed login, open redirect prevention,
-// MFA required path, Zod validation, rate limit.
 'use server';
 
 import { createClient } from '@/lib/supabase/server';

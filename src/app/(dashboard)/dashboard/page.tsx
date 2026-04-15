@@ -3,11 +3,13 @@
 // TODO: test — user with records but no validations shows validation CTA
 import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/auth/getUser';
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createClient } from '@/lib/supabase/server';
 import WelcomeBar from '@/components/dashboard/WelcomeBar';
 import StatusGrid from '@/components/dashboard/StatusGrid';
 import RecentActivity from '@/components/dashboard/RecentActivity';
 import QuickActionPanel from '@/components/dashboard/QuickActionPanel';
+import MembershipCta from '@/components/membership/MembershipCta';
+import { getMembershipInfo } from '@/lib/stripe/membership';
 
 export default async function DashboardPage() {
   const session = await getUser();
@@ -17,7 +19,7 @@ export default async function DashboardPage() {
 
   const { profile } = session;
   const userId = session.user.id;
-  const supabase = createAdminClient();
+  const supabase = await createClient();
 
   const displayName =
     [profile.first_name, profile.last_name].filter(Boolean).join(' ') ||
@@ -121,6 +123,18 @@ export default async function DashboardPage() {
         certsActive={certsActive}
         certsInProgress={certsInProgress}
       />
+
+      <div className="mb-6">
+        <MembershipCta
+          userId={userId}
+          membership={getMembershipInfo({
+            membership_status: profile.membership_status,
+            stripe_subscription_status: profile.stripe_subscription_status,
+            membership_started_at: profile.membership_started_at,
+            membership_expires_at: profile.membership_expires_at,
+          })}
+        />
+      </div>
 
       <RecentActivity
         recentLedger={recentLedger}

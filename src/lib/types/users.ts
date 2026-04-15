@@ -14,7 +14,6 @@ import type {
 export interface User {
   id: string;
   email: string;
-  password_hash: string;
   first_name: string;
   last_name: string;
   phone: string | null;
@@ -27,6 +26,16 @@ export interface User {
   membership_status: MembershipStatus;
   membership_paid_by: MembershipPaidBy;
   membership_expires_at: string | null;
+  /** Stripe customer id, set on first checkout. */
+  stripe_customer_id: string | null;
+  /** Stripe subscription id, set when membership starts. */
+  stripe_subscription_id: string | null;
+  /** Raw Stripe subscription status (active, past_due, canceled, …). */
+  stripe_subscription_status: string | null;
+  /** When the current membership term began. */
+  membership_started_at: string | null;
+  /** When membership coins were last credited (used to prevent double-grant). */
+  membership_coins_granted_at: string | null;
   status: UserStatus;
   created_at: string;
   updated_at: string;

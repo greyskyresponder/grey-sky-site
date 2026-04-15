@@ -22,7 +22,7 @@ export default async function PurchasePage() {
           &larr; Back to Sky Coins
         </Link>
       </div>
-      <CoinPurchase />
+      <CoinPurchase userId={session.user.id} />
     </div>
   );
 }

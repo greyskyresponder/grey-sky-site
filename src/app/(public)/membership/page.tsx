@@ -3,6 +3,9 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { TierCard } from "@/components/marketing/TierCard";
+import { getUser } from "@/lib/auth/getUser";
+import MembershipCta from "@/components/membership/MembershipCta";
+import { getMembershipInfo } from "@/lib/stripe/membership";
 
 export const metadata: Metadata = {
   title: "Membership | Grey Sky Responder Society",
@@ -36,7 +39,17 @@ const mathLines = [
   { label: "Purchase 4 verified response reports", cost: "200 coins" },
 ];
 
-export default function MembershipPage() {
+export default async function MembershipPage() {
+  const session = await getUser();
+  const membership = session
+    ? getMembershipInfo({
+        membership_status: session.profile.membership_status,
+        stripe_subscription_status: session.profile.stripe_subscription_status,
+        membership_started_at: session.profile.membership_started_at,
+        membership_expires_at: session.profile.membership_expires_at,
+      })
+    : null;
+
   return (
     <main>
       <Header />
@@ -267,12 +280,18 @@ export default function MembershipPage() {
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-8 leading-tight">
             Join Grey Sky Responder Society
           </h2>
-          <Link
-            href="/join"
-            className="inline-flex items-center justify-center px-10 py-4 rounded-lg bg-[var(--gs-gold)] text-[var(--gs-navy)] font-bold text-lg hover:bg-[var(--gs-gold-light)] transition-colors"
-          >
-            Join Grey Sky Responder Society
-          </Link>
+          {session && membership ? (
+            <div className="mx-auto max-w-md text-left">
+              <MembershipCta userId={session.user.id} membership={membership} />
+            </div>
+          ) : (
+            <Link
+              href="/join"
+              className="inline-flex items-center justify-center px-10 py-4 rounded-lg bg-[var(--gs-gold)] text-[var(--gs-navy)] font-bold text-lg hover:bg-[var(--gs-gold-light)] transition-colors"
+            >
+              Join Grey Sky Responder Society
+            </Link>
+          )}
           <p className="text-[var(--gs-silver)] text-sm mt-5">
             $100/year · 1,000 Sky Coins · Cancel anytime
           </p>
