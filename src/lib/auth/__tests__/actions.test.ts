@@ -82,7 +82,7 @@ describe('signUp — registration action', () => {
     mockSessionClient.auth.signUp.mockResolvedValueOnce({
       data: { user: mockAuthUser, session: null },
       error: null,
-    });
+    } as any);
 
     const { signUp } = await import('@/app/(auth)/register/actions');
     await signUp(buildFormData({
@@ -104,7 +104,7 @@ describe('signUp — registration action', () => {
     mockSessionClient.auth.signUp.mockResolvedValueOnce({
       data: { user: null, session: null },
       error: { message: 'User already registered' },
-    });
+    } as any);
 
     const { signUp } = await import('@/app/(auth)/register/actions');
     const res = await signUp(buildFormData({
@@ -124,7 +124,7 @@ describe('signUp — registration action', () => {
     mockSessionClient.auth.signUp.mockResolvedValueOnce({
       data: { user: { ...mockAuthUser, identities: [] }, session: null },
       error: null,
-    });
+    } as any);
 
     const { signUp } = await import('@/app/(auth)/register/actions');
     const res = await signUp(buildFormData({
@@ -159,7 +159,7 @@ describe('signIn — login action', () => {
     mockSessionClient.auth.signInWithPassword.mockResolvedValueOnce({
       data: { user: null, session: null },
       error: { message: 'Invalid login credentials — user not found' },
-    });
+    } as any);
 
     const { signIn } = await import('@/app/(auth)/login/actions');
     const res = await signIn(buildFormData({
