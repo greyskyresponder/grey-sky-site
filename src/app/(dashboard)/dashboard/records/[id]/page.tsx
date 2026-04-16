@@ -3,6 +3,8 @@ import { getUser } from '@/lib/auth/getUser';
 import { getDeployment } from '@/lib/queries/deployments';
 import { createClient } from '@/lib/supabase/server';
 import { RecordDetail } from '@/components/dashboard/records/RecordDetail';
+import { getDeploymentValidations } from '@/lib/validation/actions';
+import { getDeploymentEvaluations } from '@/lib/evaluation/actions';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -18,5 +20,10 @@ export default async function RecordDetailPage({ params }: Props) {
 
   if (!record) notFound();
 
-  return <RecordDetail record={record} />;
+  const [validations, evaluations] = await Promise.all([
+    getDeploymentValidations(id),
+    getDeploymentEvaluations(id),
+  ]);
+
+  return <RecordDetail record={record} validations={validations} evaluations={evaluations} />;
 }

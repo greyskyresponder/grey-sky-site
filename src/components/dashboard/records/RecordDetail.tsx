@@ -7,11 +7,26 @@ import type { DeploymentRecordDetail } from '@/lib/types/deployment-views';
 import { RecordVerificationBadge } from './RecordVerificationBadge';
 import { RecordStatusBadge } from './RecordStatusBadge';
 import { submitDeploymentAction } from '@/lib/actions/deployments';
+import { RequestValidationModal } from '@/components/validation/RequestValidationModal';
+import { RequestEvaluationModal } from '@/components/evaluation/RequestEvaluationModal';
+import { ValidationStatusBadge } from '@/components/validation/ValidationStatusBadge';
+import { EvaluationStatusBadge } from '@/components/evaluation/EvaluationStatusBadge';
+import { EvaluationRatingDisplay } from '@/components/evaluation/EvaluationRatingDisplay';
+import type { ValidationSummary } from '@/lib/validation/actions';
+import type { EvaluationSummary } from '@/lib/evaluation/actions';
 
-export function RecordDetail({ record }: { record: DeploymentRecordDetail }) {
+interface Props {
+  record: DeploymentRecordDetail;
+  validations?: ValidationSummary[];
+  evaluations?: EvaluationSummary[];
+}
+
+export function RecordDetail({ record, validations = [], evaluations = [] }: Props) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [showEvaluationModal, setShowEvaluationModal] = useState(false);
 
   const positionTitle =
     record.position?.title ?? record.positionFreeText ?? 'Unknown Position';
@@ -161,17 +176,15 @@ export function RecordDetail({ record }: { record: DeploymentRecordDetail }) {
           <>
             <button
               type="button"
-              disabled
-              title="Coming in a future update"
-              className="bg-gray-100 text-gray-400 px-4 py-2 rounded-md text-sm font-medium cursor-not-allowed"
+              onClick={() => setShowValidationModal(true)}
+              className="bg-[var(--gs-navy)] text-white hover:opacity-90 px-4 py-2 rounded-md text-sm font-medium transition-opacity"
             >
               Request Validation
             </button>
             <button
               type="button"
-              disabled
-              title="Coming in a future update"
-              className="bg-gray-100 text-gray-400 px-4 py-2 rounded-md text-sm font-medium cursor-not-allowed"
+              onClick={() => setShowEvaluationModal(true)}
+              className="bg-[var(--gs-navy)] text-white hover:opacity-90 px-4 py-2 rounded-md text-sm font-medium transition-opacity"
             >
               Request Evaluation
             </button>
@@ -184,6 +197,85 @@ export function RecordDetail({ record }: { record: DeploymentRecordDetail }) {
           Back to Records
         </Link>
       </div>
+
+      {/* Validation history */}
+      {validations.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--gs-cloud)] p-6">
+          <h3 className="text-lg font-semibold text-[var(--gs-navy)] mb-3">360 Validations</h3>
+          <ul className="space-y-3">
+            {validations.map((v) => (
+              <li
+                key={v.id}
+                className="border border-[var(--gs-cloud)] rounded-md p-3 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2"
+              >
+                <div>
+                  <div className="text-sm font-medium text-[var(--gs-navy)]">
+                    {v.validatorName || v.validatorEmail}
+                  </div>
+                  <div className="text-xs text-[var(--gs-steel)]">
+                    {v.validatorName ? v.validatorEmail : ''}
+                    {' · '}Requested {new Date(v.createdAt).toLocaleDateString()}
+                    {v.respondedAt
+                      ? ` · Responded ${new Date(v.respondedAt).toLocaleDateString()}`
+                      : ` · Expires ${new Date(v.expiresAt).toLocaleDateString()}`}
+                  </div>
+                  {v.responseText && (
+                    <p className="text-sm text-[var(--gs-steel)] mt-2 whitespace-pre-line">
+                      {v.responseText}
+                    </p>
+                  )}
+                </div>
+                <ValidationStatusBadge status={v.status} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Evaluation history */}
+      {evaluations.length > 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--gs-cloud)] p-6">
+          <h3 className="text-lg font-semibold text-[var(--gs-navy)] mb-3">ICS-225 Evaluations</h3>
+          <ul className="space-y-4">
+            {evaluations.map((e) => (
+              <li key={e.id} className="border border-[var(--gs-cloud)] rounded-md p-4">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                  <div>
+                    <div className="text-sm font-medium text-[var(--gs-navy)]">
+                      {e.evaluatorName || e.evaluatorEmail}
+                    </div>
+                    <div className="text-xs text-[var(--gs-steel)]">
+                      {e.evaluatorName ? e.evaluatorEmail : ''}
+                      {' · '}Requested {new Date(e.createdAt).toLocaleDateString()}
+                      {e.respondedAt
+                        ? ` · Responded ${new Date(e.respondedAt).toLocaleDateString()}`
+                        : ` · Expires ${new Date(e.expiresAt).toLocaleDateString()}`}
+                    </div>
+                  </div>
+                  <EvaluationStatusBadge status={e.status} />
+                </div>
+                {e.status === 'completed' && (
+                  <EvaluationRatingDisplay ratings={e.ratings} commentary={e.commentary} />
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Validation / Evaluation Modals */}
+      {showValidationModal && (
+        <RequestValidationModal
+          deploymentRecordId={record.id}
+          onClose={() => setShowValidationModal(false)}
+        />
+      )}
+      {showEvaluationModal && (
+        <RequestEvaluationModal
+          deploymentRecordId={record.id}
+          onClose={() => setShowEvaluationModal(false)}
+        />
+      )}
 
       {/* Submit Confirmation Modal */}
       {showConfirm && (
