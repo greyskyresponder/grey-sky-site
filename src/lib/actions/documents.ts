@@ -17,6 +17,7 @@ import {
   AVATAR_MAX_BYTES,
 } from '@/lib/validators/documents';
 import type { Document, DocumentSummary } from '@/lib/types/documents';
+import { sanitizeIlikeTerm } from '@/lib/security/sanitize-filter';
 
 const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic'];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -54,7 +55,10 @@ export async function getMyDocuments(filters?: Record<string, unknown>): Promise
   }
 
   if (f.search) {
-    query = query.or(`title.ilike.%${f.search}%,file_name.ilike.%${f.search}%`);
+    const needle = sanitizeIlikeTerm(f.search);
+    if (needle) {
+      query = query.or(`title.ilike.%${needle}%,file_name.ilike.%${needle}%`);
+    }
   }
 
   const from = ((f.page ?? 1) - 1) * (f.per_page ?? 20);
