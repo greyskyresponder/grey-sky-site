@@ -273,6 +273,146 @@ describe('POST /api/stripe/webhook — unhandled event types', () => {
   });
 });
 
+describe('POST /api/stripe/webhook — post-processing error handling', () => {
+  it('records processing_status=completed and no error on happy path', async () => {
+    setNoDuplicateEvent();
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createCheckoutEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true });
+
+    const stripeEventsBuilder = mockAdmin.getFromBuilder('stripe_events');
+    // Event recorded first with processing_status='processing'.
+    expect(stripeEventsBuilder.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ processing_status: 'processing' }),
+    );
+    // Then finalized to 'completed' with null processing_error.
+    expect(stripeEventsBuilder.update).toHaveBeenCalledWith(
+      expect.objectContaining({ processing_status: 'completed', processing_error: null }),
+    );
+  });
+
+  it('marks event with processing_status=error when credit_coins RPC fails', async () => {
+    setNoDuplicateEvent();
+    mockAdmin.setRpcResolution('credit_coins', {
+      data: null,
+      error: { message: 'permission denied for function credit_coins', code: '42501' },
+    });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createCheckoutEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    // Still 200 — we handle retry ourselves via processing_status.
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true, partial_error: true });
+
+    const stripeEventsBuilder = mockAdmin.getFromBuilder('stripe_events');
+    expect(stripeEventsBuilder.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        processing_status: 'error',
+        processing_error: expect.objectContaining({
+          operations: expect.arrayContaining([
+            expect.objectContaining({
+              operation: 'credit_membership_coins',
+              message: 'permission denied for function credit_coins',
+              code: '42501',
+              user_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+              event_type: 'checkout.session.completed',
+            }),
+          ]),
+        }),
+      }),
+    );
+
+    // Structured log includes full context for manual reconciliation.
+    expect(errorSpy).toHaveBeenCalledWith(
+      '[stripe webhook] operation failed',
+      expect.objectContaining({
+        operation: 'credit_membership_coins',
+        event_id: expect.any(String),
+        user_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        message: 'permission denied for function credit_coins',
+      }),
+    );
+
+    errorSpy.mockRestore();
+  });
+
+  it('marks event with processing_status=error when membership update fails', async () => {
+    setNoDuplicateEvent();
+    mockAdmin.setFromResolution('users', {
+      data: null,
+      error: { message: 'row-level security violation', code: '42501' },
+    });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createCheckoutEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ received: true, partial_error: true });
+
+    const stripeEventsBuilder = mockAdmin.getFromBuilder('stripe_events');
+    const finalizeCall = stripeEventsBuilder.update.mock.calls.find(
+      (call) => (call[0] as Record<string, unknown>)?.processing_status !== undefined,
+    );
+    expect(finalizeCall).toBeDefined();
+    const payload = finalizeCall![0] as {
+      processing_status: string;
+      processing_error: { operations: Array<{ operation: string; message: string }> };
+    };
+    expect(payload.processing_status).toBe('error');
+    const ops = payload.processing_error.operations.map((o) => o.operation);
+    expect(ops).toContain('update_membership_active');
+
+    errorSpy.mockRestore();
+  });
+
+  it('logs each failure when multiple post-processing operations fail', async () => {
+    setNoDuplicateEvent();
+    // users update succeeds (default). coin_accounts update and credit_coins RPC both fail.
+    mockAdmin.setFromResolution('coin_accounts', {
+      data: null,
+      error: { message: 'coin_accounts write failed', code: 'LOCK' },
+    });
+    mockAdmin.setRpcResolution('credit_coins', {
+      data: null,
+      error: { message: 'rpc failed', code: 'RPC_ERR' },
+    });
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createCheckoutEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+
+    const stripeEventsBuilder = mockAdmin.getFromBuilder('stripe_events');
+    const finalizeCall = stripeEventsBuilder.update.mock.calls.find(
+      (call) => (call[0] as Record<string, unknown>)?.processing_status !== undefined,
+    );
+    const payload = finalizeCall![0] as {
+      processing_status: string;
+      processing_error: { operations: Array<{ operation: string; code?: string }> };
+    };
+    expect(payload.processing_status).toBe('error');
+
+    const opNames = payload.processing_error.operations.map((o) => o.operation);
+    // Both failed ops present; the one that succeeded is absent.
+    expect(opNames).toContain('unfreeze_coin_account');
+    expect(opNames).toContain('credit_membership_coins');
+    expect(opNames).not.toContain('update_membership_active');
+    expect(payload.processing_error.operations.length).toBe(2);
+
+    errorSpy.mockRestore();
+  });
+});
+
 describe('mapStripeStatusToMembership — status mapping', () => {
   it('should map active and trialing to active', () => {
     expect(mapStripeStatusToMembership('active')).toBe('active');
