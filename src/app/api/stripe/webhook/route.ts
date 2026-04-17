@@ -14,6 +14,7 @@ import type Stripe from 'stripe';
 import { getStripe } from '@/lib/stripe/client';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { mapStripeStatusToMembership } from '@/lib/stripe/membership';
+import { env } from '@/lib/env';
 
 export const runtime = 'nodejs';
 // Stripe needs the raw body — never cache.
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!,
+      env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Invalid signature';

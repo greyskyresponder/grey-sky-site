@@ -1,4 +1,4 @@
-import { env } from './env';
+import { env } from '@/lib/env';
 import { createClient } from '@supabase/supabase-js';
 
 export interface StorageAdapter {

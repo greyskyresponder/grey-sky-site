@@ -6,8 +6,9 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { getStripe } from '@/lib/stripe/client';
 import { PURCHASE_PACKAGES } from '@/lib/coins/products';
 import type { StripeCheckoutResult } from '@/lib/types/stripe';
+import { env } from '@/lib/env';
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+const APP_URL = env.NEXT_PUBLIC_APP_URL;
 
 /**
  * Returns existing stripe_customer_id, or creates a new Stripe customer
@@ -71,7 +72,7 @@ export async function createMembershipCheckout(
       client_reference_id: userId,
       line_items: [
         {
-          price: process.env.STRIPE_MEMBERSHIP_PRICE_ID!,
+          price: env.STRIPE_MEMBERSHIP_PRICE_ID,
           quantity: 1,
         },
       ],
