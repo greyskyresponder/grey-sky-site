@@ -48,6 +48,7 @@ jobs:
           NEXT_PUBLIC_APP_URL: http://localhost:3000
           STRIPE_SECRET_KEY: sk_test_ci_placeholder
           STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
+          STRIPE_MEMBERSHIP_PRICE_ID: price_ci_placeholder
           NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
           EMAIL_MODE: console
           STORAGE_MODE: supabase
