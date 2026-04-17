@@ -10,6 +10,10 @@
 // TODO: test — listAuditLog filters by actor, action, entity_type, date range
 import { createAdminClient } from '@/lib/supabase/admin';
 import type { AuditLogEntry } from '@/lib/types/audit';
+import {
+  sanitizeIlikeTerm,
+  sanitizeFilterValue,
+} from '@/lib/security/sanitize-filter';
 
 type Role = 'member' | 'org_admin' | 'assessor' | 'platform_admin';
 type MembershipStatus = 'active' | 'expired' | 'none';
@@ -170,10 +174,12 @@ export async function listUsers(
     query = query.eq('membership_status', filters.membershipStatus);
   }
   if (filters.search && filters.search.trim().length > 0) {
-    const needle = filters.search.trim().replace(/[%,]/g, '');
-    query = query.or(
-      `email.ilike.%${needle}%,first_name.ilike.%${needle}%,last_name.ilike.%${needle}%`,
-    );
+    const needle = sanitizeIlikeTerm(filters.search);
+    if (needle) {
+      query = query.or(
+        `email.ilike.%${needle}%,first_name.ilike.%${needle}%,last_name.ilike.%${needle}%`,
+      );
+    }
   }
 
   const { data, count, error } = await query;
@@ -229,12 +235,14 @@ export async function getUserAuditHistory(
   limit: number = 25,
 ): Promise<AuditLogEntry[]> {
   const supabase = createAdminClient();
+  const safeUserId = sanitizeFilterValue(userId);
+  if (!safeUserId) return [];
   const { data, error } = await supabase
     .from('audit_log')
     .select(
       'id, actor_id, actor_type, action, entity_type, entity_id, details_json, ip_address, created_at',
     )
-    .or(`actor_id.eq.${userId},entity_id.eq.${userId}`)
+    .or(`actor_id.eq.${safeUserId},entity_id.eq.${safeUserId}`)
     .order('created_at', { ascending: false })
     .limit(limit);
 
