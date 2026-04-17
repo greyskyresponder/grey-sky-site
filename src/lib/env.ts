@@ -15,7 +15,8 @@ const publicSchema = z.object({
 
 const serverSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  SUPABASE_DB_URL: z.string().min(1),
+  // Only needed for local migrations / CLI — not required at build or runtime on Azure SWA
+  SUPABASE_DB_URL: z.string().optional(),
   STRIPE_SECRET_KEY: z.string().min(1),
   STRIPE_WEBHOOK_SECRET: z.string().min(1),
   STRIPE_MEMBERSHIP_PRICE_ID: z.string().min(1),
