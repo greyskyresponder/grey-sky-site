@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllSlugs, getPositionBySlug } from "@/lib/rtlt";
+import { getPositionBySlug } from "@/lib/rtlt";
 import { JoinCTA } from "@/components/public/JoinCTA";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -10,9 +10,11 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
-}
+// On-demand rendering — removed generateStaticParams() to avoid
+// pre-rendering 625 position pages (2,500 files / 60 MB) which
+// caused Azure SWA warm-up timeouts during deployment.
+// Pages render instantly on first request from static JSON data.
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
