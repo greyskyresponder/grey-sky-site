@@ -4,7 +4,15 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { applySecurityHeaders } from "@/lib/security/headers";
 import { rateLimiter, RATE_LIMITS, buildKey } from "@/lib/security/rate-limiter";
-import { env } from "@/lib/env";
+
+// NOTE: Do NOT import `env` from "@/lib/env" here.
+// The Zod env module eagerly validates ALL server vars (Stripe keys, etc.)
+// at module load time. Middleware runs in the Edge/Node cold-start path and
+// Azure SWA's warm-up probe hits it before env vars are fully injected,
+// causing the 585s warm-up timeout. Middleware only needs the two public
+// Supabase vars, so we read them directly from process.env.
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 const AUTH_RATE_LIMITS: Record<string, keyof typeof RATE_LIMITS> = {
   "/login": "auth/login",
@@ -78,8 +86,8 @@ export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    env.NEXT_PUBLIC_SUPABASE_URL,
-    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
