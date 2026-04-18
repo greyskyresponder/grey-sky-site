@@ -68,6 +68,12 @@ export type VerificationTier = 'self_certified' | 'validated_360' | 'evaluated_i
 /** B5: deployment_records.status */
 export type DeploymentRecordStatus = 'draft' | 'submitted' | 'verified';
 
+/** B8: deployment_records.operational_setting (ICS 222 Block 8) */
+export type OperationalSetting = 'eoc' | 'icp' | 'fob' | 'boo' | 'field_staging' | 'jfo' | 'other';
+
+/** B9: deployment_records.compensation_status (ICS 222 Block 13) */
+export type CompensationStatus = 'paid' | 'volunteer' | 'mutual_aid' | 'other';
+
 /** B6: validation_requests.status */
 export type ValidationRequestStatus = 'pending' | 'confirmed' | 'denied' | 'expired';
 

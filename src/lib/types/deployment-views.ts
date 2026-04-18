@@ -3,6 +3,8 @@ import type {
   DeploymentRecordStatus,
   IncidentType,
   NimsType,
+  OperationalSetting,
+  CompensationStatus,
 } from './enums';
 
 export interface DeploymentRecordDetail {
@@ -15,11 +17,22 @@ export interface DeploymentRecordDetail {
   startDate: string;
   endDate: string | null;
   hours: number | null;
+  totalDays: number | null;
+  operationalPeriods: number | null;
+  operationalSetting: OperationalSetting | null;
+  operationalSettingOther: string | null;
+  compensationStatus: CompensationStatus | null;
+  compensationStatusOther: string | null;
+  dutiesSummary: string | null;
+  keyAccomplishments: string | null;
+  personnelSupervised: string | null;
+  equipmentSupervised: string | null;
   verificationTier: VerificationTier;
   supervisorName: string | null;
   supervisorEmail: string | null;
   notes: string | null;
   status: DeploymentRecordStatus;
+  selfCertifiedAt: string | null;
   createdAt: string;
   updatedAt: string;
   incident: IncidentSummary | null;
@@ -65,6 +78,16 @@ export interface CreateDeploymentPayload {
   startDate: string;
   endDate: string | null;
   hours: number | null;
+  totalDays: number | null;
+  operationalPeriods: number | null;
+  operationalSetting: OperationalSetting | null;
+  operationalSettingOther: string | null;
+  compensationStatus: CompensationStatus | null;
+  compensationStatusOther: string | null;
+  dutiesSummary: string | null;
+  keyAccomplishments: string | null;
+  personnelSupervised: string | null;
+  equipmentSupervised: string | null;
   supervisorName: string | null;
   supervisorEmail: string | null;
   notes: string | null;

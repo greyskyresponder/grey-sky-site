@@ -1,3 +1,4 @@
+// @deprecated — ICS 222 Response Report (RecordForm) handles inline incident creation. This form is retained for potential admin use only.
 // TODO: Add tests — form renders required fields, optional section toggle, submit calls action, error display, pending state
 'use client';
 

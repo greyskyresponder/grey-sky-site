@@ -17,22 +17,46 @@ import {
   submitDeployment,
 } from '@/lib/queries/deployments';
 
+function parseIntField(formData: FormData, key: string): number | null {
+  const raw = formData.get(key);
+  if (raw === null || raw === '') return null;
+  const parsed = parseInt(String(raw), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function parseStringField(formData: FormData, key: string): string | null {
+  const raw = formData.get(key);
+  if (raw === null) return null;
+  const str = String(raw).trim();
+  return str.length === 0 ? null : str;
+}
+
 function parseFormPayload(formData: FormData) {
   return {
-    incidentId: (formData.get('incidentId') as string) || null,
-    incidentName: (formData.get('incidentName') as string) || null,
-    incidentType: (formData.get('incidentType') as string) || null,
-    incidentState: (formData.get('incidentState') as string) || null,
-    incidentStartDate: (formData.get('incidentStartDate') as string) || null,
-    positionId: (formData.get('positionId') as string) || null,
-    positionFreeText: (formData.get('positionFreeText') as string) || null,
-    orgId: (formData.get('orgId') as string) || null,
+    incidentId: parseStringField(formData, 'incidentId'),
+    incidentName: parseStringField(formData, 'incidentName'),
+    incidentType: parseStringField(formData, 'incidentType'),
+    incidentState: parseStringField(formData, 'incidentState'),
+    incidentStartDate: parseStringField(formData, 'incidentStartDate'),
+    positionId: parseStringField(formData, 'positionId'),
+    positionFreeText: parseStringField(formData, 'positionFreeText'),
+    orgId: parseStringField(formData, 'orgId'),
     startDate: formData.get('startDate') as string,
-    endDate: (formData.get('endDate') as string) || null,
-    hours: formData.get('hours') ? Number(formData.get('hours')) : null,
-    supervisorName: (formData.get('supervisorName') as string) || null,
-    supervisorEmail: (formData.get('supervisorEmail') as string) || null,
-    notes: (formData.get('notes') as string) || null,
+    endDate: parseStringField(formData, 'endDate'),
+    hours: parseIntField(formData, 'hours'),
+    totalDays: parseIntField(formData, 'totalDays'),
+    operationalPeriods: parseIntField(formData, 'operationalPeriods'),
+    operationalSetting: parseStringField(formData, 'operationalSetting'),
+    operationalSettingOther: parseStringField(formData, 'operationalSettingOther'),
+    compensationStatus: parseStringField(formData, 'compensationStatus'),
+    compensationStatusOther: parseStringField(formData, 'compensationStatusOther'),
+    dutiesSummary: parseStringField(formData, 'dutiesSummary'),
+    keyAccomplishments: parseStringField(formData, 'keyAccomplishments'),
+    personnelSupervised: parseStringField(formData, 'personnelSupervised'),
+    equipmentSupervised: parseStringField(formData, 'equipmentSupervised'),
+    supervisorName: parseStringField(formData, 'supervisorName'),
+    supervisorEmail: parseStringField(formData, 'supervisorEmail'),
+    notes: parseStringField(formData, 'notes'),
   };
 }
 
@@ -44,6 +68,7 @@ export async function createDeploymentAction(formData: FormData) {
 
   if (!user) return { error: 'Not authenticated' };
 
+  const certifyAndSubmit = formData.get('certifyAndSubmit') === 'true';
   const raw = parseFormPayload(formData);
   const validation = createDeploymentSchema.safeParse(raw);
   if (!validation.success) {
@@ -53,6 +78,11 @@ export async function createDeploymentAction(formData: FormData) {
 
   const result = await createDeployment(supabase, user.id, validation.data);
   if (result.error) return { error: result.error };
+
+  if (certifyAndSubmit && result.id) {
+    const submitResult = await submitDeployment(supabase, user.id, result.id);
+    if (submitResult.error) return { error: submitResult.error };
+  }
 
   redirect(`/dashboard/records/${result.id}`);
 }
@@ -65,6 +95,7 @@ export async function updateDeploymentAction(recordId: string, formData: FormDat
 
   if (!user) return { error: 'Not authenticated' };
 
+  const certifyAndSubmit = formData.get('certifyAndSubmit') === 'true';
   const raw = parseFormPayload(formData);
   const validation = createDeploymentSchema.safeParse(raw);
   if (!validation.success) {
@@ -74,6 +105,11 @@ export async function updateDeploymentAction(recordId: string, formData: FormDat
 
   const result = await updateDeployment(supabase, user.id, recordId, validation.data);
   if (result.error) return { error: result.error };
+
+  if (certifyAndSubmit) {
+    const submitResult = await submitDeployment(supabase, user.id, recordId);
+    if (submitResult.error) return { error: submitResult.error };
+  }
 
   revalidatePath(`/dashboard/records/${recordId}`);
   redirect(`/dashboard/records/${recordId}`);

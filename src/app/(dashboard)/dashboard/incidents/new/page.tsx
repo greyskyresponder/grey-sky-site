@@ -1,29 +1,11 @@
-import Link from 'next/link';
-import { ChevronLeft } from 'lucide-react';
-import IncidentCreateForm from '@/components/incidents/IncidentCreateForm';
+import { redirect } from 'next/navigation';
 
 export const metadata = {
-  title: 'Log New Incident | Grey Sky Responder',
+  title: 'Submit Response Report | Grey Sky Responder',
 };
 
+// Incidents are now created inline during ICS 222 Response Report submission.
+// See: docs/design/GSR-DOC-202-203-PROFILE-DEPLOYMENTS.md (ICS 222 block mapping).
 export default function NewIncidentPage() {
-  return (
-    <div className="space-y-6">
-      <div>
-        <Link
-          href="/dashboard/incidents"
-          className="inline-flex items-center gap-1 text-sm text-[var(--gs-steel)] hover:text-[var(--gs-navy)] transition-colors mb-3"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back to Incidents
-        </Link>
-        <h1 className="text-xl font-bold text-[var(--gs-navy)]">Log New Incident</h1>
-        <p className="text-sm text-[var(--gs-steel)] mt-0.5">
-          Record an incident so you can attach deployment records to it.
-        </p>
-      </div>
-
-      <IncidentCreateForm />
-    </div>
-  );
+  redirect('/dashboard/records/new');
 }

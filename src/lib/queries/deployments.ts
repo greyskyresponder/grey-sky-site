@@ -2,9 +2,13 @@
 // TODO: test — happy path: getDeployment returns full record with joins
 // TODO: test — createDeployment: inline incident creation + record insertion
 // TODO: test — updateDeployment: only draft records editable, ownership enforced
-// TODO: test — submitDeployment: transitions draft → submitted, blocks non-draft
+// TODO: test — submitDeployment: transitions draft → submitted, sets self_certified_at, blocks non-draft
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { NimsType } from '@/lib/types/enums';
+import type {
+  NimsType,
+  OperationalSetting,
+  CompensationStatus,
+} from '@/lib/types/enums';
 import type {
   DeploymentRecordDetail,
   DeploymentFilters,
@@ -26,11 +30,22 @@ function mapRecord(row: Record<string, unknown>): DeploymentRecordDetail {
     startDate: row.start_date as string,
     endDate: row.end_date as string | null,
     hours: row.hours as number | null,
+    totalDays: (row.total_days as number | null) ?? null,
+    operationalPeriods: (row.operational_periods as number | null) ?? null,
+    operationalSetting: (row.operational_setting as OperationalSetting | null) ?? null,
+    operationalSettingOther: (row.operational_setting_other as string | null) ?? null,
+    compensationStatus: (row.compensation_status as CompensationStatus | null) ?? null,
+    compensationStatusOther: (row.compensation_status_other as string | null) ?? null,
+    dutiesSummary: (row.duties_summary as string | null) ?? null,
+    keyAccomplishments: (row.key_accomplishments as string | null) ?? null,
+    personnelSupervised: (row.personnel_supervised as string | null) ?? null,
+    equipmentSupervised: (row.equipment_supervised as string | null) ?? null,
     verificationTier: row.verification_tier as DeploymentRecordDetail['verificationTier'],
     supervisorName: row.supervisor_name as string | null,
     supervisorEmail: row.supervisor_email as string | null,
     notes: row.notes as string | null,
     status: row.status as DeploymentRecordDetail['status'],
+    selfCertifiedAt: (row.self_certified_at as string | null) ?? null,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
     incident: incident
@@ -66,11 +81,71 @@ function mapRecord(row: Record<string, unknown>): DeploymentRecordDetail {
 }
 
 const RECORD_SELECT = `
-  *,
+  id, user_id, incident_id, position_id, position_free_text, org_id,
+  start_date, end_date, hours, total_days, operational_periods,
+  operational_setting, operational_setting_other,
+  compensation_status, compensation_status_other,
+  duties_summary, key_accomplishments,
+  personnel_supervised, equipment_supervised,
+  verification_tier, supervisor_name, supervisor_email,
+  notes, status, self_certified_at, created_at, updated_at,
   incidents(id, name, incident_type, location_state, incident_start_date, incident_end_date, fema_disaster_number),
   positions(id, title, nims_type, resource_category, discipline),
   organizations(id, name, type)
 `;
+
+function buildInsertRow(userId: string, payload: CreateDeploymentPayload, incidentId: string | null) {
+  return {
+    user_id: userId,
+    incident_id: incidentId ?? null,
+    position_id: payload.positionId ?? null,
+    position_free_text: payload.positionFreeText ?? null,
+    org_id: payload.orgId ?? null,
+    start_date: payload.startDate,
+    end_date: payload.endDate ?? null,
+    hours: payload.hours ?? null,
+    total_days: payload.totalDays ?? null,
+    operational_periods: payload.operationalPeriods ?? null,
+    operational_setting: payload.operationalSetting ?? null,
+    operational_setting_other: payload.operationalSettingOther ?? null,
+    compensation_status: payload.compensationStatus ?? null,
+    compensation_status_other: payload.compensationStatusOther ?? null,
+    duties_summary: payload.dutiesSummary ?? null,
+    key_accomplishments: payload.keyAccomplishments ?? null,
+    personnel_supervised: payload.personnelSupervised ?? null,
+    equipment_supervised: payload.equipmentSupervised ?? null,
+    verification_tier: 'self_certified' as const,
+    supervisor_name: payload.supervisorName ?? null,
+    supervisor_email: payload.supervisorEmail ?? null,
+    notes: payload.notes ?? null,
+    status: 'draft' as const,
+  };
+}
+
+function buildUpdateRow(payload: CreateDeploymentPayload, incidentId: string | null) {
+  return {
+    incident_id: incidentId ?? null,
+    position_id: payload.positionId ?? null,
+    position_free_text: payload.positionFreeText ?? null,
+    org_id: payload.orgId ?? null,
+    start_date: payload.startDate,
+    end_date: payload.endDate ?? null,
+    hours: payload.hours ?? null,
+    total_days: payload.totalDays ?? null,
+    operational_periods: payload.operationalPeriods ?? null,
+    operational_setting: payload.operationalSetting ?? null,
+    operational_setting_other: payload.operationalSettingOther ?? null,
+    compensation_status: payload.compensationStatus ?? null,
+    compensation_status_other: payload.compensationStatusOther ?? null,
+    duties_summary: payload.dutiesSummary ?? null,
+    key_accomplishments: payload.keyAccomplishments ?? null,
+    personnel_supervised: payload.personnelSupervised ?? null,
+    equipment_supervised: payload.equipmentSupervised ?? null,
+    supervisor_name: payload.supervisorName ?? null,
+    supervisor_email: payload.supervisorEmail ?? null,
+    notes: payload.notes ?? null,
+  };
+}
 
 export async function listDeployments(
   supabase: SupabaseClient,
@@ -152,21 +227,7 @@ export async function createDeployment(
 
   const { data, error } = await supabase
     .from('deployment_records')
-    .insert({
-      user_id: userId,
-      incident_id: incidentId ?? null,
-      position_id: payload.positionId ?? null,
-      position_free_text: payload.positionFreeText ?? null,
-      org_id: payload.orgId ?? null,
-      start_date: payload.startDate,
-      end_date: payload.endDate ?? null,
-      hours: payload.hours ?? null,
-      verification_tier: 'self_certified',
-      supervisor_name: payload.supervisorName ?? null,
-      supervisor_email: payload.supervisorEmail ?? null,
-      notes: payload.notes ?? null,
-      status: 'draft',
-    })
+    .insert(buildInsertRow(userId, payload, incidentId))
     .select('id')
     .single();
 
@@ -213,18 +274,7 @@ export async function updateDeployment(
 
   const { error } = await supabase
     .from('deployment_records')
-    .update({
-      incident_id: incidentId ?? null,
-      position_id: payload.positionId ?? null,
-      position_free_text: payload.positionFreeText ?? null,
-      org_id: payload.orgId ?? null,
-      start_date: payload.startDate,
-      end_date: payload.endDate ?? null,
-      hours: payload.hours ?? null,
-      supervisor_name: payload.supervisorName ?? null,
-      supervisor_email: payload.supervisorEmail ?? null,
-      notes: payload.notes ?? null,
-    })
+    .update(buildUpdateRow(payload, incidentId))
     .eq('id', recordId)
     .eq('user_id', userId);
 
@@ -249,7 +299,10 @@ export async function submitDeployment(
 
   const { error } = await supabase
     .from('deployment_records')
-    .update({ status: 'submitted' })
+    .update({
+      status: 'submitted',
+      self_certified_at: new Date().toISOString(),
+    })
     .eq('id', recordId)
     .eq('user_id', userId);
 

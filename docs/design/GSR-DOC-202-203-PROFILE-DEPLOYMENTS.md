@@ -237,20 +237,32 @@ This doc builds the foundation: list, create, and view deployment records. The v
 
 ### Existing Tables (no schema changes required)
 
-**`deployment_records`** — created in DOC-002:
+**`deployment_records`** — created in DOC-002, expanded in `20260418000001_ics222_response_report.sql` to align with Grey Sky adapted ICS 222 (Rev 3/26):
 - `id` uuid (PK)
 - `user_id` uuid → users
 - `incident_id` uuid → incidents (nullable — allow records without a registered incident)
 - `position_id` uuid → positions (nullable — allow free-text position if not in RTLT)
+- `position_free_text` text (nullable) — **ICS 222 Block 5** free-text position when not in RTLT
 - `org_id` uuid → organizations (nullable)
 - `start_date` date
 - `end_date` date (nullable — ongoing deployments)
 - `hours` integer (nullable — calculated or manual)
+- `total_days` integer (nullable) — **ICS 222 Block 9** total days on incident
+- `operational_periods` integer (nullable) — **ICS 222 Block 9** operational periods served
+- `operational_setting` enum: `eoc` | `icp` | `fob` | `boo` | `field_staging` | `jfo` | `other` — **ICS 222 Block 8**
+- `operational_setting_other` text (nullable) — when setting = `other`
+- `compensation_status` enum: `paid` | `volunteer` | `mutual_aid` | `other` — **ICS 222 Block 13**
+- `compensation_status_other` text (nullable) — when status = `other`
+- `duties_summary` text (nullable) — **ICS 222 Block 14** summary of duties and responsibilities
+- `key_accomplishments` text (nullable) — **ICS 222 Block 15** key accomplishments and activities
+- `personnel_supervised` text (nullable) — **ICS 222 Block 16** range of personnel managed
+- `equipment_supervised` text (nullable) — **ICS 222 Block 16** range of equipment/vehicles managed
 - `verification_tier` enum: `self_certified` | `validated_360` | `evaluated_ics225`
 - `supervisor_name` varchar (nullable)
 - `supervisor_email` varchar (nullable)
-- `notes` text (nullable)
+- `notes` text (nullable) — **ICS 222 Block 17** Remarks
 - `status` enum: `draft` | `submitted` | `verified`
+- `self_certified_at` timestamptz (nullable) — **ICS 222 Block 18** explicit self-certification timestamp
 - `created_at`, `updated_at` timestamptz
 
 **`incidents`** — created in DOC-002:
@@ -467,9 +479,10 @@ src/lib/queries/incidents.ts     — Supabase queries for incident search + crea
 ## Copy Direction
 
 - Page title: "Service Record" — not "Deployment History" or "Experience Log"
-- Create button: "Record a Deployment" — not "Add Record" or "New Entry"
+- Create button: "Submit Response Report" — not "Add Record" or "New Entry" or "Record a Deployment"
+- The form IS the ICS 222 Response Report. Every field maps to an ICS 222 block.
 - Empty state heading: "Your service record starts here."
-- Empty state body: "Every deployment you record becomes part of your verified professional history. Start with what you remember — you can add details and request verifications later."
+- Empty state body: "Every deployment you record becomes part of your verified professional history. Submit your first Response Report — document what you did, where, and what you accomplished."
 - Verification tier labels displayed to member:
   - Self-Certified: "Self-Reported" with gray badge — "You recorded this deployment."
   - Validated 360: "Peer Verified" with gold badge — "Confirmed by a colleague or supervisor."
@@ -478,9 +491,11 @@ src/lib/queries/incidents.ts     — Supabase queries for incident search + crea
   - Draft: "Draft" gray — "Not yet submitted. You can still edit this record."
   - Submitted: "Submitted" gold — "Submitted to your service record."
   - Verified: "Verified" green — "Confirmed through independent verification."
-- Submit confirmation dialog: "Once submitted, this record becomes part of your permanent service history. You can request verifications after submission. Are you sure?"
+- Submit confirmation dialog includes self-certification language: "I certify that the information in this report is accurate and complete to the best of my knowledge. Once submitted, this record becomes part of your permanent service history."
 - Supervisor fields label: "Supervisor / Point of Contact" — subtitle: "Optional. Used for verification requests."
-- Notes label: "Additional Context" — placeholder: "Anything else relevant to this deployment — conditions, challenges, outcomes."
+- Notes label: "Remarks" — placeholder: "Any additional information relevant to this deployment record." (ICS 222 Block 17)
+- Duties summary label: "Summary of Duties and Responsibilities" — placeholder: "Describe duties performed, scope of authority, reporting relationships, and key functions." (ICS 222 Block 14)
+- Key accomplishments label: "Key Accomplishments and Activities" — placeholder: "Describe significant accomplishments, outcomes, and contributions to incident objectives." (ICS 222 Block 15)
 
 ## Acceptance Criteria
 
@@ -515,6 +530,38 @@ src/lib/queries/incidents.ts     — Supabase queries for incident search + crea
 - **Lookout** (UX): Profile view is a single-scroll page — no tabs within tabs. Records list uses card layout with clear tier/status badges visible at glance. Create form is a single page, not a multi-step wizard — responders filling this out may be on a phone in the field. Position search has category grouping to narrow 625 entries. Empty states are encouraging, not clinical.
 
 - **Threshold** (security): RLS is the trust boundary for both users and deployment_records tables. No application-layer authorization beyond confirming authentication. Avatar uploads scoped to user's own path in storage bucket. Phone and supervisor email are PII — never exposed beyond the member's own view (and future admin, DOC-904). No data leakage between members.
+
+---
+
+## ICS 222 Response Report — Block Mapping
+
+The deployment record form (RecordForm.tsx) is the digital implementation of the Grey Sky adapted **ICS 222 Response Report** (Rev 3/26). Every form field maps to an ICS 222 block:
+
+| Block | ICS 222 Field | DB Column | Form Section |
+|-------|---------------|-----------|---------------|
+| 1 | Incident Name | `incidents.name` | Incident selector |
+| 2 | Incident Number | `incidents.incident_number` | Auto from incident |
+| 3 | Date/Time Prepared | `deployment_records.created_at` | Auto |
+| 4 | Name | `users.first_name/last_name` | Auto from auth |
+| 5 | Position Held | `position_id` / `position_free_text` | Position selector |
+| 6 | Home Agency/Org | `org_id` | Org selector |
+| 7 | Incident Location | `incidents.location_state/county` | From incident |
+| 8 | Operational Setting | `operational_setting` / `_other` | Radio group |
+| 9 | Dates/Duration | `start_date`, `end_date`, `total_days`, `operational_periods` | Date fields |
+| 10 | Complexity Level | `incidents.complexity_level` | From incident |
+| 11 | Incident Type | `incidents.incident_type` | From incident |
+| 12 | Declaration Status | `incidents.fema_*` fields | From incident |
+| 13 | Compensation Status | `compensation_status` / `_other` | Radio group |
+| 14 | Summary of Duties | `duties_summary` | Textarea |
+| 15 | Key Accomplishments | `key_accomplishments` | Textarea |
+| 16 | Resources Managed | `personnel_supervised`, `equipment_supervised` | Dropdowns |
+| 17 | Remarks | `notes` | Textarea |
+| 18 | Self-Certification | `self_certified_at` + submit action | Checkbox + submit |
+| 19 | Validation | `validation_requests` table | Post-submit modal |
+
+**Doctrinal note:** "The ICS 222 documents the deployment. The ICS 225 evaluates performance. Both together create a complete incident service record."
+
+**The standalone IncidentCreateForm (`/dashboard/incidents/new`) is deprecated for user-facing use.** Incidents are created inline during Response Report submission or imported from FEMA data. The incidents table remains as a shared registry.
 
 ---
 
@@ -629,15 +676,27 @@ export interface DeploymentRecordDetail {
   userId: string;
   incidentId: string | null;
   positionId: string | null;
+  positionFreeText: string | null;
   orgId: string | null;
   startDate: string;
   endDate: string | null;
   hours: number | null;
+  totalDays: number | null;
+  operationalPeriods: number | null;
+  operationalSetting: OperationalSetting | null;
+  operationalSettingOther: string | null;
+  compensationStatus: CompensationStatus | null;
+  compensationStatusOther: string | null;
+  dutiesSummary: string | null;
+  keyAccomplishments: string | null;
+  personnelSupervised: string | null;
+  equipmentSupervised: string | null;
   verificationTier: VerificationTier;
   supervisorName: string | null;
   supervisorEmail: string | null;
   notes: string | null;
   status: DeploymentStatus;
+  selfCertifiedAt: string | null;
   createdAt: string;
   updatedAt: string;
   incident: IncidentSummary | null;
@@ -646,6 +705,9 @@ export interface DeploymentRecordDetail {
   validationCount: number;
   evaluationCount: number;
 }
+
+export type OperationalSetting = 'eoc' | 'icp' | 'fob' | 'boo' | 'field_staging' | 'jfo' | 'other';
+export type CompensationStatus = 'paid' | 'volunteer' | 'mutual_aid' | 'other';
 
 export interface IncidentSummary {
   id: string;
@@ -683,6 +745,16 @@ export interface CreateDeploymentPayload {
   startDate: string;
   endDate: string | null;
   hours: number | null;
+  totalDays: number | null;
+  operationalPeriods: number | null;
+  operationalSetting: OperationalSetting | null;
+  operationalSettingOther: string | null;
+  compensationStatus: CompensationStatus | null;
+  compensationStatusOther: string | null;
+  dutiesSummary: string | null;
+  keyAccomplishments: string | null;
+  personnelSupervised: string | null;
+  equipmentSupervised: string | null;
   supervisorName: string | null;
   supervisorEmail: string | null;
   notes: string | null;

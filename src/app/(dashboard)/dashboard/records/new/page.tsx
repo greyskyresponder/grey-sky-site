@@ -28,7 +28,12 @@ export default async function NewRecordPage() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold text-[var(--gs-navy)] mb-6">Record a Deployment</h1>
+      <div className="mb-6">
+        <h1 className="text-xl font-bold text-[var(--gs-navy)]">Submit Response Report</h1>
+        <p className="text-sm text-[var(--gs-steel)] mt-0.5">
+          ICS 222 Response Report — document your deployment for your service record.
+        </p>
+      </div>
       <RecordForm categories={categories} userOrgs={userOrgs} />
     </div>
   );
