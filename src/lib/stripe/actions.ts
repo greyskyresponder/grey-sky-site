@@ -62,6 +62,10 @@ export async function createMembershipCheckout(
   if (!auth) return { error: 'Not authorized.' };
   if (!auth.email) return { error: 'Account email missing.' };
 
+  if (!env.STRIPE_MEMBERSHIP_PRICE_ID) {
+    return { error: 'Stripe membership price not configured.' };
+  }
+
   try {
     const customerId = await getOrCreateStripeCustomer(userId, auth.email);
     const stripe = getStripe();

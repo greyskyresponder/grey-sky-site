@@ -56,13 +56,21 @@ export default async function DashboardLayout({
     email: session.user.email || '',
   };
 
-  const coinBalance = await getBalance(session.user.id);
+  let coinBalance = 0;
+  let coinsFrozen = false;
+  try {
+    const balance = await getBalance(session.user.id);
+    coinBalance = balance.balance;
+    coinsFrozen = balance.frozen;
+  } catch (err) {
+    console.warn('[dashboard] coin balance unavailable, defaulting to 0:', err);
+  }
 
   return (
     <DashboardLayoutClient
       sidebarUser={sidebarUser}
-      coinBalance={coinBalance.balance}
-      coinsFrozen={coinBalance.frozen}
+      coinBalance={coinBalance}
+      coinsFrozen={coinsFrozen}
     >
       {children}
     </DashboardLayoutClient>

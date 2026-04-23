@@ -14,24 +14,31 @@ import type {
  * Get current coin balance for a user.
  */
 export async function getBalance(userId: string): Promise<CoinBalance> {
-  const supabase = await createClient();
+  const fallback: CoinBalance = { balance: 0, lifetimeEarned: 0, lifetimeSpent: 0, frozen: false };
 
-  const { data, error } = await supabase
-    .from('coin_accounts')
-    .select('balance, lifetime_earned, lifetime_spent, frozen')
-    .eq('user_id', userId)
-    .single();
+  try {
+    const supabase = await createClient();
 
-  if (error || !data) {
-    return { balance: 0, lifetimeEarned: 0, lifetimeSpent: 0, frozen: false };
+    const { data, error } = await supabase
+      .from('coin_accounts')
+      .select('balance, lifetime_earned, lifetime_spent, frozen')
+      .eq('user_id', userId)
+      .single();
+
+    if (error || !data) {
+      return fallback;
+    }
+
+    return {
+      balance: data.balance,
+      lifetimeEarned: data.lifetime_earned,
+      lifetimeSpent: data.lifetime_spent,
+      frozen: data.frozen,
+    };
+  } catch (err) {
+    console.warn('[coins] getBalance failed, returning default balance:', err);
+    return fallback;
   }
-
-  return {
-    balance: data.balance,
-    lifetimeEarned: data.lifetime_earned,
-    lifetimeSpent: data.lifetime_spent,
-    frozen: data.frozen,
-  };
 }
 
 /**

@@ -52,6 +52,10 @@ export async function POST(request: NextRequest) {
   const body = await request.text();
   const stripe = getStripe();
 
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    return NextResponse.json({ error: 'Stripe webhook secret not configured' }, { status: 503 });
+  }
+
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(

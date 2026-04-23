@@ -8,6 +8,9 @@ export interface StorageAdapter {
 }
 
 function createSupabaseStorage(): StorageAdapter {
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('[storage] SUPABASE_SERVICE_ROLE_KEY is not configured');
+  }
   const supabase = createClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.SUPABASE_SERVICE_ROLE_KEY

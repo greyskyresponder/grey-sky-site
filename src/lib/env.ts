@@ -14,14 +14,16 @@ const publicSchema = z.object({
 });
 
 const serverSchema = z.object({
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
+  // Needed for admin queries but basic user-scoped reads work without it
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   // Only needed for local migrations / CLI — not required at build or runtime on Azure SWA
   SUPABASE_DB_URL: z.string().optional(),
-  STRIPE_SECRET_KEY: z.string().min(1),
-  STRIPE_WEBHOOK_SECRET: z.string().min(1),
-  STRIPE_MEMBERSHIP_PRICE_ID: z.string().min(1),
+  // Stripe keys are only required for billing operations, not for basic dashboard rendering
+  STRIPE_SECRET_KEY: z.string().min(1).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
+  STRIPE_MEMBERSHIP_PRICE_ID: z.string().min(1).optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  EMAIL_MODE: z.enum(['console', 'sendgrid']).default('console'),
+  EMAIL_MODE: z.enum(['console', 'sendgrid', 'disabled']).default('console'),
   SENDGRID_API_KEY: z.string().optional(),
   SENDGRID_FROM_EMAIL: z.string().email().default('noreply@greysky.dev'),
   STORAGE_MODE: z.enum(['supabase', 'azure']).default('supabase'),
@@ -50,6 +52,16 @@ function parseOrThrow<T>(schema: z.ZodType<T>, source: unknown, label: string): 
   throw new Error(formatIssues(result.error, label));
 }
 
+// Soft parse: logs a warning and returns the parser's best-effort output so a
+// runtime with partial env (e.g. Azure SWA) still boots instead of crashing.
+function parseSoft<T>(schema: z.ZodType<T>, source: unknown, label: string): T {
+  const result = schema.safeParse(source);
+  if (result.success) return result.data;
+  console.warn(formatIssues(result.error, label));
+  const fallback = schema.safeParse({});
+  return fallback.success ? fallback.data : ({} as T);
+}
+
 // Static references so Next.js inlines public values into the client bundle.
 const publicSource = {
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -63,7 +75,7 @@ const isServer = typeof window === 'undefined';
 
 const publicEnv: PublicEnv = parseOrThrow(publicSchema, publicSource, 'public');
 const serverEnv: ServerEnv | null = isServer
-  ? parseOrThrow(serverSchema, process.env, 'server')
+  ? parseSoft(serverSchema, process.env, 'server')
   : null;
 
 const SERVER_ONLY_KEYS = new Set(Object.keys(serverSchema.shape));

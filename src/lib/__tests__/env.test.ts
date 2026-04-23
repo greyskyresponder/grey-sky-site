@@ -13,7 +13,7 @@ function resetEnv() {
   }
 }
 
-describe('lib/env — fail-fast validation', () => {
+describe('lib/env — validation', () => {
   beforeEach(() => {
     resetEnv();
     vi.resetModules();
@@ -33,9 +33,12 @@ describe('lib/env — fail-fast validation', () => {
     expect(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).toBe('pk_test_placeholder');
   });
 
-  it('throws an error naming the missing var when a single server var is absent', async () => {
+  it('loads without throwing when an optional server var is absent (logs warning instead)', async () => {
     delete process.env.STRIPE_SECRET_KEY;
-    await expect(import('@/lib/env')).rejects.toThrow(/STRIPE_SECRET_KEY/);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { env } = await import('@/lib/env');
+    expect(env.STRIPE_SECRET_KEY).toBeUndefined();
+    warn.mockRestore();
   });
 
   it('throws an error naming the missing var when a single public var is absent', async () => {
@@ -43,23 +46,17 @@ describe('lib/env — fail-fast validation', () => {
     await expect(import('@/lib/env')).rejects.toThrow(/NEXT_PUBLIC_SUPABASE_URL/);
   });
 
-  it('lists all missing vars in one error when multiple are absent', async () => {
+  it('loads gracefully with defaults when multiple optional server vars are absent', async () => {
     delete process.env.STRIPE_SECRET_KEY;
     delete process.env.STRIPE_WEBHOOK_SECRET;
     delete process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    let caught: Error | null = null;
-    try {
-      await import('@/lib/env');
-    } catch (err) {
-      caught = err as Error;
-    }
-
-    expect(caught).not.toBeNull();
-    const message = caught!.message;
-    expect(message).toMatch(/STRIPE_SECRET_KEY/);
-    expect(message).toMatch(/STRIPE_WEBHOOK_SECRET/);
-    expect(message).toMatch(/SUPABASE_SERVICE_ROLE_KEY/);
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const { env } = await import('@/lib/env');
+    expect(env.STRIPE_SECRET_KEY).toBeUndefined();
+    expect(env.STRIPE_WEBHOOK_SECRET).toBeUndefined();
+    expect(env.SUPABASE_SERVICE_ROLE_KEY).toBeUndefined();
+    warn.mockRestore();
   });
 
   it('rejects NEXT_PUBLIC_SUPABASE_URL that is not a valid URL', async () => {
@@ -73,5 +70,11 @@ describe('lib/env — fail-fast validation', () => {
     expect(env.NEXT_PUBLIC_APP_URL).toBe('http://localhost:3000');
     expect(env.EMAIL_MODE).toBe('console');
     expect(env.STORAGE_MODE).toBe('supabase');
+  });
+
+  it("accepts 'disabled' as a valid EMAIL_MODE value", async () => {
+    process.env.EMAIL_MODE = 'disabled';
+    const { env } = await import('@/lib/env');
+    expect(env.EMAIL_MODE).toBe('disabled');
   });
 });
