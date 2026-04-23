@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { resetPassword, updatePassword } from './actions';
+import { createClient } from '@/lib/supabase/client';
 import {
   resetPasswordSchema,
   updatePasswordSchema,
@@ -53,13 +53,16 @@ function RequestResetForm() {
       return;
     }
 
-    const result = await resetPassword(form);
+    const supabase = createClient();
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      (typeof window !== 'undefined' ? window.location.origin : '');
 
-    if (result.error) {
-      setError(result.error);
-      setLoading(false);
-      return;
-    }
+    // Never differentiate between "email exists" and "email doesn't exist" — this
+    // endpoint must respond identically in all cases to prevent user enumeration.
+    await supabase.auth.resetPasswordForEmail(validation.data.email, {
+      redirectTo: `${appUrl}/reset-password`,
+    });
 
     setSuccess(true);
     setLoading(false);
@@ -158,6 +161,7 @@ function RequestResetForm() {
 }
 
 function UpdatePasswordForm() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -186,13 +190,19 @@ function UpdatePasswordForm() {
       return;
     }
 
-    const result = await updatePassword(form);
+    const supabase = createClient();
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: validation.data.password,
+    });
 
-    if (result?.error) {
-      setError(result.error);
+    if (updateError) {
+      setError(updateError.message);
       setLoading(false);
+      return;
     }
-    // On success, updatePassword calls redirect() — this component unmounts
+
+    router.push('/dashboard');
+    router.refresh();
   }
 
   return (

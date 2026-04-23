@@ -19,16 +19,19 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--gs-navy)]/95 backdrop-blur-md border-b border-[var(--gs-steel)]/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded bg-[var(--gs-gold)] flex items-center justify-center">
-              <span className="text-[var(--gs-navy)] font-bold text-sm">GS</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="text-white font-semibold text-sm tracking-wide">
-                Grey Sky Responder
-              </span>
-              <span className="text-[var(--gs-silver)] text-xs block -mt-0.5">Society</span>
-            </div>
+          <Link href="/" className="flex items-baseline gap-3 group">
+            <span
+              className="text-white font-semibold text-lg tracking-[0.2em] uppercase"
+              style={{ fontFamily: 'var(--gs-font-heading)' }}
+            >
+              Grey Sky
+            </span>
+            <span
+              className="hidden sm:inline text-[var(--gs-silver)] text-xs tracking-[0.15em] uppercase"
+              style={{ fontFamily: 'var(--gs-font-heading)' }}
+            >
+              Responder Society
+            </span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">

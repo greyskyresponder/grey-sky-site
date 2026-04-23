@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { loginSchema } from '@/lib/validators/auth';
 import { MfaChallenge } from '@/components/auth/MfaChallenge';
-import { signIn } from './actions';
+import { createClient } from '@/lib/supabase/client';
 
 const inputClass =
   'w-full px-3 py-2.5 border border-[var(--gs-cloud)] rounded text-[var(--gs-navy)] placeholder-[var(--gs-silver)] focus:outline-none focus:ring-2 focus:ring-[var(--gs-gold)] focus:border-transparent bg-white';
@@ -46,19 +46,34 @@ export default function LoginForm() {
       return;
     }
 
-    const result = await signIn(form, redirectTo);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({
+      email: validation.data.email,
+      password: validation.data.password,
+    });
 
-    if (result && 'error' in result) {
-      setServerError(result.error);
+    if (error) {
+      setServerError('Invalid email or password');
       setLoading(false);
       return;
     }
-    if (result && 'mfaRequired' in result) {
-      setMfaRedirectTo(result.redirectTo);
+
+    const safeRedirect =
+      redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+        ? redirectTo
+        : '/dashboard';
+
+    const { data: aal } =
+      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+
+    if (aal && aal.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+      setMfaRedirectTo(safeRedirect);
       setLoading(false);
       return;
     }
-    // If no error, signIn calls redirect() — this component unmounts
+
+    router.push(safeRedirect);
+    router.refresh();
   }
 
   if (mfaRedirectTo) {

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { registrationSchema } from '@/lib/validators/auth';
-import { signUp } from './actions';
+import { createClient } from '@/lib/supabase/client';
 
 const US_STATES = [
   { value: 'AL', label: 'Alabama' },
@@ -111,24 +111,44 @@ export default function RegisterForm() {
       return;
     }
 
-    const result = await signUp(form);
+    const { email, password, first_name, last_name } = validation.data;
+    // TODO: phone and location_state require admin client (service role key)
+    // to write to the users table. Restore server-side handling when the
+    // Azure SWA server runtime is fixed.
 
-    if (result.error) {
-      setServerError(result.error);
+    const GENERIC_ERROR = 'Unable to create account. Please try again.';
+
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { first_name, last_name },
+      },
+    });
+
+    if (error) {
+      setServerError(GENERIC_ERROR);
       setLoading(false);
       return;
     }
 
-    if (result.redirect) {
-      router.push(result.redirect);
+    // Supabase returns an empty identities array when the email is already in use.
+    // Respond identically to the fresh-signup path so attackers cannot enumerate users.
+    if (data.user?.identities?.length === 0) {
+      setConfirmEmail(true);
+      setLoading(false);
+      return;
+    }
+
+    if (data.session) {
+      router.push('/dashboard');
       router.refresh();
       return;
     }
 
-    if (result.confirmEmail) {
-      setConfirmEmail(true);
-      setLoading(false);
-    }
+    setConfirmEmail(true);
+    setLoading(false);
   }
 
   if (confirmEmail) {
