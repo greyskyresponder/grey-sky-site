@@ -1,0 +1,261 @@
+[
+  {
+    "ptb_id": "PTB-1109",
+    "ptb_name": "Community Emergency Response Team (CERT) Section Chief",
+    "pq_id": "10-509-1464",
+    "pq_name": "Community Emergency Response Team (CERT) Section Chief",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1016",
+    "ptb_name": "Damage Assessment Coordinator",
+    "pq_id": "10-509-1411",
+    "pq_name": "Damage Assessment Coordinator (NQS)",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1018",
+    "ptb_name": "Division/Group Supervisor",
+    "pq_id": "2-509-1406",
+    "pq_name": "Division/Group Supervisor (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1020",
+    "ptb_name": "Donations Coordination Task Force Leader",
+    "pq_id": "9-509-1282",
+    "pq_name": "Donations Coordination Task Force Leader (NQS)",
+    "category": "Mass Care Services"
+  },
+  {
+    "ptb_id": "PTB-1021",
+    "ptb_name": "Donations Specialist",
+    "pq_id": "9-509-1283",
+    "pq_name": "Donations Specialist (NQS)",
+    "category": "Mass Care Services"
+  },
+  {
+    "ptb_id": "PTB-1065",
+    "ptb_name": "Fatality Management Disaster Portable Morgue Unit Leader",
+    "pq_id": "12-509-1327",
+    "pq_name": "Fatality Management Disaster Portable Morgue Unit Leader (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1066",
+    "ptb_name": "Fatality Management Disaster Portable Morgue Unit Supply Specialist",
+    "pq_id": "12-509-1326",
+    "pq_name": "Fatality Management Disaster Portable Morgue Unit Supply Specialist (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1025",
+    "ptb_name": "Fatality Management Human Remains Recovery Team Leader",
+    "pq_id": "12-509-1322",
+    "pq_name": "Fatality Management Human Remains Recovery Team Leader (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1023",
+    "ptb_name": "Fatality Management Morgue Admitting Specialist",
+    "pq_id": "12-509-1315",
+    "pq_name": "Fatality Management Morgue Admitting Specialist (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1024",
+    "ptb_name": "Fatality Management Morgue Forensic Team Leader",
+    "pq_id": "12-509-1314",
+    "pq_name": "Fatality Management Morgue Forensic Team Leader (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1022",
+    "ptb_name": "Fatality Management Morgue Processing Unit Leader",
+    "pq_id": "12-509-1313",
+    "pq_name": "Fatality Management Morgue Processing Unit Leader (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1067",
+    "ptb_name": "Forensic Group Supervisor",
+    "pq_id": "2-509-1429",
+    "pq_name": "Forensic Group Supervisor (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1028",
+    "ptb_name": "Geographic Information Systems Specialist",
+    "pq_id": "14-509-1323",
+    "pq_name": "Geographic Information Systems Specialist (NQS)",
+    "category": "Geographic Info Systems and Info Technology"
+  },
+  {
+    "ptb_id": "PTB-1068",
+    "ptb_name": "Geographic Information Systems Supervisor",
+    "pq_id": "14-509-1297",
+    "pq_name": "Geographic Information Systems Supervisor (NQS)",
+    "category": "Geographic Info Systems and Info Technology"
+  },
+  {
+    "ptb_id": "PTB-1029",
+    "ptb_name": "Ground Support Unit Leader",
+    "pq_id": "11-509-1298",
+    "pq_name": "Ground Support Unit Leader (NQS)",
+    "category": "Logistics and Transportation"
+  },
+  {
+    "ptb_id": "PTB-1004",
+    "ptb_name": "Hazard Mitigation Community Education and Outreach Specialist",
+    "pq_id": "15-509-1407",
+    "pq_name": "Hazard Mitigation Community Education and Outreach Specialist (NQS)",
+    "category": "Hazard Mitigation"
+  },
+  {
+    "ptb_id": "PTB-1005",
+    "ptb_name": "Hazard Mitigation Community Planner Specialist",
+    "pq_id": "15-509-1408",
+    "pq_name": "Hazard Mitigation Community Planner Specialist (NQS)",
+    "category": "Hazard Mitigation"
+  },
+  {
+    "ptb_id": "PTB-1006",
+    "ptb_name": "Hazard Mitigation Engineering and Architect Specialist",
+    "pq_id": "15-509-1409",
+    "pq_name": "Hazard Mitigation Engineering and Architect Specialist (NQS)",
+    "category": "Hazard Mitigation"
+  },
+  {
+    "ptb_id": "PTB-1007",
+    "ptb_name": "Hazard Mitigation Floodplain Management Specialist",
+    "pq_id": "15-509-1410",
+    "pq_name": "Hazard Mitigation Floodplain Management Specialist (NQS)",
+    "category": "Hazard Mitigation"
+  },
+  {
+    "ptb_id": "PTB-1030",
+    "ptb_name": "Housing Task Force Field Coordinator",
+    "pq_id": "10-509-1414",
+    "pq_name": "Housing Task Force Field Coordinator (NQS)",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1031",
+    "ptb_name": "Housing Task Force Leader",
+    "pq_id": "10-509-1413",
+    "pq_name": "Housing Task Force Leader (NQS)",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1032",
+    "ptb_name": "Human Services Disaster Assessment Team Leader",
+    "pq_id": "9-509-1430",
+    "pq_name": "Human Services Disaster Assessment Team Leader (NQS)",
+    "category": "Mass Care Services"
+  },
+  {
+    "ptb_id": "PTB-1036",
+    "ptb_name": "Intelligence Group Supervisor",
+    "pq_id": "2-509-1433",
+    "pq_name": "Intelligence Group Supervisor (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1038",
+    "ptb_name": "Investigative Operations Group Supervisor",
+    "pq_id": "2-509-1434",
+    "pq_name": "Investigative Operations Group Supervisor (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1039",
+    "ptb_name": "Investigative Support Group Supervisor",
+    "pq_id": "2-509-1435",
+    "pq_name": "Investigative Support Group Supervisor (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1040",
+    "ptb_name": "Liaison Officer",
+    "pq_id": "2-509-1033",
+    "pq_name": "Liaison Officer (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1042",
+    "ptb_name": "Mass Fatality Management Group Supervisor",
+    "pq_id": "12-509-1318",
+    "pq_name": "Mass Fatality Management Group Supervisor (NQS)",
+    "category": "Medical and Public Health"
+  },
+  {
+    "ptb_id": "PTB-1113",
+    "ptb_name": "Medical Unit Leader",
+    "pq_id": "10-509-1317",
+    "pq_name": "Medical Unit Leader (NQS)",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1044",
+    "ptb_name": "Missing Persons Group Supervisor",
+    "pq_id": "2-509-1436",
+    "pq_name": "Missing Persons Group Supervisor (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1115",
+    "ptb_name": "Public Assistance Program Delivery Manager",
+    "pq_id": "16-509-1474",
+    "pq_name": "Public Assistance Program Delivery Manager",
+    "category": "Recovery"
+  },
+  {
+    "ptb_id": "PTB-1114",
+    "ptb_name": "Public Assistance Site Inspector",
+    "pq_id": "16-509-1473",
+    "pq_name": "Public Assistance Site Inspector",
+    "category": "Recovery"
+  },
+  {
+    "ptb_id": "PTB-1063",
+    "ptb_name": "Rapid Needs Assessment Team Leader",
+    "pq_id": "2-509-1438",
+    "pq_name": "Rapid Needs Assessment Team Leader (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1064",
+    "ptb_name": "Rapid Needs Assessment Technical Specialist",
+    "pq_id": "2-509-1439",
+    "pq_name": "Rapid Needs Assessment Technical Specialist (NQS)",
+    "category": "Incident Management"
+  },
+  {
+    "ptb_id": "PTB-1051",
+    "ptb_name": "Science and Technology Advisor",
+    "pq_id": "10-509-1309",
+    "pq_name": "Science and Technology Advisor (NQS)",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1059",
+    "ptb_name": "Support Branch Director",
+    "pq_id": "11-509-1443",
+    "pq_name": "Support Branch Director (NQS)",
+    "category": "Logistics and Transportation"
+  },
+  {
+    "ptb_id": "PTB-1061",
+    "ptb_name": "Tribal/State Disaster Recovery Coordinator",
+    "pq_id": "10-509-1412",
+    "pq_name": "Tribal/State Disaster Recovery Coordinator (NQS)",
+    "category": "Emergency Management"
+  },
+  {
+    "ptb_id": "PTB-1122",
+    "ptb_name": "Urban Search and Rescue (US&amp;R) Task Force Leader",
+    "pq_id": "8-509-1168",
+    "pq_name": "Urban Search and Rescue (US&amp;R) Task Force Leader",
+    "category": "Search and Rescue"
+  }
+]

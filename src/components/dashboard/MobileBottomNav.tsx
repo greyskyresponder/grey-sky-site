@@ -7,7 +7,7 @@ import {
   FileText,
   User,
   Coins,
-  Award,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -21,9 +21,9 @@ type BottomNavItem = {
 const bottomNavItems: BottomNavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Reports', href: '/dashboard/records', icon: FileText },
+  { label: 'Quals', href: '/dashboard/qualifications', icon: ClipboardCheck },
   { label: 'Profile', href: '/dashboard/profile', icon: User },
   { label: 'Coins', href: '/dashboard/coins', icon: Coins },
-  { label: 'Certs', href: '/dashboard/certifications', icon: Award },
 ];
 
 export default function MobileBottomNav() {

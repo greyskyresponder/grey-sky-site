@@ -8,6 +8,7 @@ import {
   CreditCard,
   ShieldCheck,
   ScrollText,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -22,6 +23,7 @@ const navItems: NavItem[] = [
   { label: 'Users', href: '/admin/users', icon: Users },
   { label: 'Memberships', href: '/admin/memberships', icon: CreditCard },
   { label: 'Validations', href: '/admin/validations', icon: ShieldCheck },
+  { label: 'Verifications', href: '/admin/verifications', icon: ClipboardCheck },
   { label: 'Audit Log', href: '/admin/audit', icon: ScrollText },
 ];
 

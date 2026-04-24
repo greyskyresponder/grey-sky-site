@@ -93,6 +93,17 @@ export type {
 export type { AuditLogEntry } from './audit';
 
 export type {
+  RequirementType,
+  FulfillmentStatus,
+  PositionRequirement,
+  UserRequirementFulfillment,
+  UserPositionPursuit,
+  RequirementSlotView,
+  PursuitSummary,
+  VerificationQueueEntry,
+} from './requirements';
+
+export type {
   StripeSubscriptionStatus,
   MembershipInfo,
   StripeCheckoutResult,

@@ -10,6 +10,7 @@ import {
   Coins,
   FolderOpen,
   Award,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -22,6 +23,7 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Response Reports', href: '/dashboard/records', icon: FileText },
+  { label: 'Qualifications', href: '/dashboard/qualifications', icon: ClipboardCheck },
   { label: 'Incidents', href: '/dashboard/incidents', icon: MapPin },
   { label: 'Profile', href: '/dashboard/profile', icon: User },
   { label: 'Sky Coins', href: '/dashboard/coins', icon: Coins },

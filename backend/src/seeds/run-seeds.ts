@@ -3,6 +3,7 @@ import pg from 'pg';
 import { seedPositions } from './001_positions.js';
 import { seedAffinities } from './002_affinities.js';
 import { seedSrtDisciplines } from './003_srt_disciplines.js';
+import { seedPositionRequirements } from './004_position_requirements.js';
 
 async function runSeeds() {
   const databaseUrl = process.env.DATABASE_URL;
@@ -19,6 +20,7 @@ async function runSeeds() {
     await seedPositions(client);
     await seedAffinities(client);
     await seedSrtDisciplines(client);
+    await seedPositionRequirements(client);
     console.log('All seeds complete.');
   } finally {
     await client.end();
