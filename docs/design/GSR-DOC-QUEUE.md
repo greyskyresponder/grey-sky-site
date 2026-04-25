@@ -71,14 +71,14 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 
 | Doc ID | Title | Priority | Status | Blocks On | Notes |
 |--------|-------|----------|--------|-----------|-------|
-| GSR-DOC-100 | Public Site — Home + Navigation | CRITICAL | ✅ COMPLETE | — | Live at greysky.dev. Landing page, global nav, footer, waitlist CTA. 17 disciplines. |
-| GSR-DOC-101 | Public Site — Membership Page | HIGH | REVIEW | — | Live at /membership. Copy alignment needed: Sky Coins spend categories and OD-03 reconciliation. |
-| GSR-DOC-102 | Public Site — For Organizations + Agencies | HIGH | DRAFT | — | GAP: No standalone page exists. Needs dedicated org sponsorship + team credentialing sales page. |
-| GSR-DOC-103 | Public Site — Standards + Disciplines | NORMAL | ✅ COMPLETE | — | Live at /standards. 17 RTLT discipline categories, 612 entries, detail pages. |
-| GSR-DOC-104 | Public Site — About / Mission | NORMAL | ✅ COMPLETE | — | Live at /about. Longview background, Grey Sky mission, deployment stats. |
-| GSR-DOC-105 | Public Site — Contact Page | NORMAL | REVIEW | — | No standalone /contact page. Footer has mailto. Needs form or decision that mailto suffices. |
-| GSR-DOC-106 | Public Site — Tell Your Story | NORMAL | ✅ COMPLETE | — | Live at /story. Professional identity lifecycle. Not in original DOC-000 spec. |
-| GSR-DOC-107 | Public Site — Community | NORMAL | ✅ COMPLETE | — | Live at /community. Establishes Society framing. Not in original DOC-000 spec. |
+| GSR-DOC-100 | Public Site — Home + Navigation | CRITICAL | ✅ COMPLETE | — | Live at greysky.dev. Landing page, global nav, footer, waitlist CTA. 17 disciplines. Doc backfilled 2026-04-24: `GSR-DOC-100-PUBLIC-SITE-HOME.md`. |
+| GSR-DOC-101 | Public Site — Membership Page | HIGH | REVIEW | OD-15 | Live at /membership. Copy alignment pending OD-15. Doc backfilled 2026-04-24: `GSR-DOC-101-PUBLIC-SITE-MEMBERSHIP.md`. |
+| GSR-DOC-102 | Public Site — For Organizations + Agencies | HIGH | ✅ COMPLETE | — | Live at /organizations. Two-lane sponsorship pitch. Doc: `GSR-DOC-102-ORGANIZATIONS-PAGE.md`. |
+| GSR-DOC-103 | Public Site — Standards + Disciplines | NORMAL | ✅ COMPLETE | — | Live at /standards. 17 RTLT discipline categories, 612 entries, detail pages. Doc backfilled 2026-04-24: `GSR-DOC-103-PUBLIC-SITE-STANDARDS.md`. |
+| GSR-DOC-104 | Public Site — About / Mission | NORMAL | ✅ COMPLETE | — | Live at /about. Longview background, Grey Sky mission, deployment stats. Doc backfilled 2026-04-24: `GSR-DOC-104-PUBLIC-SITE-ABOUT.md`. |
+| GSR-DOC-105 | Public Site — Contact Surface | NORMAL | REVIEW | — | No standalone /contact page. Footer mailto is current. Recommendation in backfilled doc: stay on mailto until volume warrants form. Doc: `GSR-DOC-105-PUBLIC-SITE-CONTACT.md`. |
+| GSR-DOC-106 | Public Site — Tell Your Story | NORMAL | ✅ COMPLETE | — | Live at /story. Professional identity lifecycle. Doc backfilled 2026-04-24: `GSR-DOC-106-PUBLIC-SITE-STORY.md`. |
+| GSR-DOC-107 | Public Site — Community | NORMAL | ✅ COMPLETE | — | Live at /community. Establishes Society framing. Doc backfilled 2026-04-24: `GSR-DOC-107-PUBLIC-SITE-COMMUNITY.md`. |
 
 ---
 
@@ -169,8 +169,8 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 | GSR-DOC-900 | Security Hardening | CRITICAL | DRAFT | DOC-004 | Nation-state threat model. Supabase RLS, CSP, CORS, CSRF, anomaly detection, token security, encryption, attack surface inventory. File: `GSR-DOC-900-SECURITY-HARDENING.md`. |
 | GSR-DOC-901 | Security Patch — password_hash Removal, RLS Tightening, Admin Client Fix | CRITICAL | DRAFT | — | Audit-driven security patch. File: `GSR-DOC-901-SECURITY-PATCH.md`. **Numbering note (2026-04-24):** This file claimed 901 before the planned "Audit Logging + Tamper Evidence" entry was authored. Audit Logging will be renumbered to a free slot when authored. |
 | GSR-DOC-902 | Testing Foundation — Vitest Setup + Critical Path Test Suites | CRITICAL | DRAFT | — | Audit-driven. Zero tests existed across 40+ TODO markers; this installs the framework. File: `GSR-DOC-902-TESTING-FOUNDATION.md`. **Numbering note (2026-04-24):** This file claimed 902 before the planned "Input Validation — Zod Schemas" entry was authored. Zod schema work will be renumbered to a free slot when authored. |
-| GSR-DOC-903 | API Error Handling + Response Format | HIGH | DRAFT | DOC-004 | Consistent errors. No internal state leakage to unauthenticated callers. (Not yet authored.) |
-| GSR-DOC-904 | Admin Dashboard — Platform Management | HIGH | DRAFT | DOC-200, DOC-600 | Platform admin. Elevated auth. Member/engagement/revenue management. (Not yet authored.) |
+| GSR-DOC-903 | API Error Handling + Response Format | HIGH | REVIEW | DOC-004 | Pattern documented. Full-codebase audit pending. Doc backfilled 2026-04-24: `GSR-DOC-903-API-ERROR-HANDLING.md`. |
+| GSR-DOC-904 | Admin Dashboard — Platform Management | HIGH | ✅ COMPLETE | DOC-200 | Live at /admin/* (home, users, memberships, validations, verifications, audit). Doc backfilled 2026-04-24: `GSR-DOC-904-ADMIN-DASHBOARD.md`. |
 | GSR-DOC-905 | Sky Points Ledger — Integrity + Triggers | HIGH | DRAFT | DOC-002 | Append-only trigger. Write auth tightly scoped — no client-side coin minting. (Not yet authored.) |
 | GSR-DOC-906 | Backup, Recovery + Incident Response | CRITICAL | DRAFT | DOC-004 | Destructive attack assumption. RPO/RTO targets. Geo-separated backups. IR plan. Credential revocation. (Not yet authored.) |
 | GSR-DOC-907 | Data Classification + Privacy Controls | HIGH | DRAFT | DOC-001 | Field-level classification. Supabase RLS mapping. GDPR/state privacy. PII handling for attestations. (Not yet authored.) |
