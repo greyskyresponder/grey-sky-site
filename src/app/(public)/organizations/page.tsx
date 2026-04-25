@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ServiceLane } from "@/components/marketing/ServiceLane";
+import { ReferenceClient } from "@/components/marketing/ReferenceClient";
 import { AgencyCtaSection } from "@/components/marketing/AgencyCtaSection";
-import { disciplines } from "@/lib/disciplines";
 
 export const metadata: Metadata = {
   title: "For Organizations + Agencies | Grey Sky Responder Society",
@@ -20,7 +20,7 @@ const processSteps = [
   {
     title: "Self-Assessment",
     description:
-      "Teams complete an 11-section self-assessment documenting readiness across deployment history, personnel, equipment, and training.",
+      "Teams complete an 11-section self-assessment documenting deployment history, personnel, equipment, capabilities, training, and exercises.",
   },
   {
     title: "Onsite Assessment",
@@ -42,6 +42,22 @@ const processSteps = [
     description:
       "Team receives credentialing outcome. Individual members earn Grey Sky certifications for assessed positions.",
   },
+];
+
+const srtDisciplines = [
+  { name: "Urban Search & Rescue", abbr: "US&R", icon: "🏗️" },
+  { name: "Swiftwater / Flood Rescue", abbr: "SWFRT", icon: "🌊" },
+  { name: "Hazardous Materials", abbr: "HazMat", icon: "☢️" },
+  { name: "SWAT", abbr: "SWAT", icon: "🛡️" },
+  { name: "Bomb Squad", abbr: "EOD", icon: "💥" },
+  { name: "Waterborne SAR", abbr: "WSAR", icon: "⚓" },
+  { name: "Land SAR", abbr: "LSAR", icon: "🏔️" },
+  { name: "Small Unmanned Aircraft Systems", abbr: "sUAS", icon: "🛸" },
+  { name: "Rotary Wing SAR", abbr: "RWSAR", icon: "🚁" },
+  { name: "Animal Rescue / SAR", abbr: "AR-SAR", icon: "🐾" },
+  { name: "Incident Management Teams", abbr: "IMT", icon: "📡" },
+  { name: "EOC Management Support Teams", abbr: "EOC", icon: "🏢" },
+  { name: "Public Safety Dive Teams", abbr: "PSDT", icon: "🤿" },
 ];
 
 const whyGreySky = [
@@ -94,7 +110,7 @@ export default function OrganizationsPage() {
         </div>
       </section>
 
-      {/* Two Service Lanes */}
+      {/* Section 1: Two Service Lanes */}
       <section className="py-20 bg-[var(--gs-white)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -112,9 +128,9 @@ export default function OrganizationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <ServiceLane
               variant="primary"
-              eyebrow="Lane A"
+              eyebrow="Lane A — Sponsor Your Responders"
               headline="Individual Member Sponsorship"
-              body="Organizations sponsor their responders' Grey Sky memberships. Sponsored members build verified service records, earn certifications, and pursue credentials — all tracked through the platform. The sponsoring agency sees certification status and readiness for sponsored disciplines only. No access to private records or personal documents."
+              body="Organizations sponsor their responders' Grey Sky memberships. Sponsored members build verified service records, earn certifications, and pursue credentials — all tracked through the platform. The sponsoring agency sees certification status and readiness for sponsored disciplines only. No access to private records, deployment details, or personal documents."
               points={[
                 "$100/year per sponsored member (includes 1,000 Sky Coins)",
                 "Consent-based visibility — responders control what agencies see",
@@ -122,30 +138,30 @@ export default function OrganizationsPage() {
                 "Readiness dashboards by discipline and team",
                 "Bulk sponsorship with organizational coin pools",
               ]}
-              ctaText="Sponsor Your Responders"
+              ctaText="Start Sponsoring Your Team"
               ctaHref="mailto:info@greysky.org?subject=Organization%20Sponsorship%20Inquiry"
             />
             <ServiceLane
               variant="secondary"
-              eyebrow="Lane B"
+              eyebrow="Lane B — Team Credentialing"
               headline="Specialty Response Team Assessment + Credentialing"
-              body="Longview Solutions Group delivers the SRT-CAP (Specialty Response Team Capabilities Assessment Program) — a structured methodology that evaluates team readiness across 11 operational areas, assigns FEMA RTLT typing levels, and credentials individual team members across every discipline defined in the FEMA Resource Typing Library Tool."
+              body="Longview Solutions Group delivers the SRT-CAP (Specialty Response Team Capabilities Assessment Program) — a structured methodology that evaluates team readiness across 11 operational areas, assigns FEMA RTLT typing levels, and credentials individual team members. Currently under contract with the Florida Division of Emergency Management across 13 SRT disciplines statewide."
               points={[
                 "Structured self-assessment collection (11 sections)",
                 "Onsite expert assessment by qualified assessors",
-                "Detailed field reports with per-section scoring",
+                "Detailed field reports with per-section scoring and recommendations",
                 "Final readiness determination with RTLT typing levels",
                 "Individual team member certifications through the engagement",
                 "Readiness dashboards and gap analysis",
               ]}
-              ctaText="Discuss Team Credentialing"
+              ctaText="Schedule a Readiness Conversation"
               ctaHref="mailto:info@greysky.org?subject=Team%20Credentialing%20Inquiry"
             />
           </div>
         </div>
       </section>
 
-      {/* SRT-CAP Process */}
+      {/* Section 2: SRT-CAP Process */}
       <section className="py-20 bg-gradient-to-b from-[var(--gs-navy)] to-[var(--gs-slate)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
@@ -161,19 +177,27 @@ export default function OrganizationsPage() {
             </p>
           </div>
 
-          <ol className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Horizontal step flow on lg+, vertical stack on mobile */}
+          <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-2">
             {processSteps.map((step, index) => (
               <li
                 key={step.title}
-                className="relative p-6 rounded-xl bg-[var(--gs-slate)]/60 border border-[var(--gs-steel)]/30"
+                className="relative flex flex-col items-center text-center"
               >
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-full bg-[var(--gs-gold)] flex items-center justify-center shrink-0">
-                    <span className="text-[var(--gs-navy)] font-bold text-lg">{index + 1}</span>
-                  </div>
-                  <h3 className="text-white font-semibold text-lg">{step.title}</h3>
+                {/* Connector line — between steps on lg+ */}
+                {index > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className="hidden lg:block absolute top-6 right-1/2 w-full h-0.5 bg-[var(--gs-gold)]/30 -translate-y-1/2"
+                  />
+                )}
+                <div className="relative w-12 h-12 rounded-full bg-[var(--gs-gold)] flex items-center justify-center shrink-0 mb-4 ring-4 ring-[var(--gs-navy)]">
+                  <span className="text-[var(--gs-navy)] font-bold text-lg">{index + 1}</span>
                 </div>
-                <p className="text-[var(--gs-silver)] text-sm leading-relaxed">
+                <h3 className="text-white font-semibold text-base lg:text-sm mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-[var(--gs-silver)] text-xs leading-relaxed px-2">
                   {step.description}
                 </p>
               </li>
@@ -182,7 +206,7 @@ export default function OrganizationsPage() {
         </div>
       </section>
 
-      {/* FEMA RTLT Disciplines */}
+      {/* Section 3: 13 SRT Disciplines */}
       <section className="py-20 bg-[var(--gs-white)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -190,36 +214,48 @@ export default function OrganizationsPage() {
               Scope of Coverage
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-[var(--gs-navy)] mb-4">
-              FEMA RTLT Disciplines
+              The 13 SRT Disciplines
             </h2>
             <p className="text-lg text-[var(--gs-steel)] max-w-2xl mx-auto">
-              Grey Sky credentials teams across every discipline defined in the FEMA Resource
-              Typing Library Tool.
+              The specialty response team types currently credentialed under the Florida SRT-CAP program.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {disciplines.map((d, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {srtDisciplines.map((d, i) => (
               <div
-                key={d.slug}
-                className="flex items-center gap-4 p-4 rounded-lg bg-[var(--gs-cloud)]/40 border border-[var(--gs-cloud)]"
+                key={d.abbr}
+                className="flex items-center gap-4 p-4 rounded-lg bg-white border border-[var(--gs-cloud)] hover:border-[var(--gs-gold)]/40 transition-colors"
               >
-                <div className="w-9 h-9 rounded-md bg-[var(--gs-navy)] flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded-md bg-[var(--gs-navy)] flex items-center justify-center shrink-0">
                   <span className="text-[var(--gs-gold)] font-bold text-sm">{i + 1}</span>
                 </div>
-                <div>
-                  <div className="text-[var(--gs-navy)] font-semibold text-sm">{d.name}</div>
-                  <div className="text-[var(--gs-steel)] text-xs uppercase tracking-wider">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[var(--gs-navy)] font-semibold text-sm leading-tight">
+                    {d.name}
+                  </div>
+                  <div className="text-[var(--gs-steel)] text-xs uppercase tracking-wider mt-0.5">
                     {d.abbr}
                   </div>
+                </div>
+                <div className="text-2xl shrink-0" aria-hidden="true">
+                  {d.icon}
                 </div>
               </div>
             ))}
           </div>
+
+          <p className="text-center text-[var(--gs-steel)] text-sm italic mt-10 max-w-3xl mx-auto">
+            Grey Sky supports credentialing for ALL team types defined in the FEMA Resource Typing
+            Library Tool — not limited to the 13 Florida SRT disciplines listed above.
+          </p>
         </div>
       </section>
 
-      {/* Why Grey Sky */}
+      {/* Section 4: Reference Client (Florida FDEM) */}
+      <ReferenceClient />
+
+      {/* Section 5: Why Grey Sky */}
       <section className="py-20 bg-[var(--gs-white)]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -244,7 +280,7 @@ export default function OrganizationsPage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Section 6: CTA */}
       <AgencyCtaSection />
 
       <Footer />
