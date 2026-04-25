@@ -5,7 +5,7 @@ export const metadata = {
 };
 
 // Incidents are now created inline during ICS 222 Response Report submission.
-// See: docs/design/GSR-DOC-202-203-PROFILE-DEPLOYMENTS.md (ICS 222 block mapping).
+// See: docs/design/GSR-DOC-203-DEPLOYMENT-RECORDS.md (ICS 222 block mapping).
 export default function NewIncidentPage() {
   redirect('/dashboard/records/new');
 }

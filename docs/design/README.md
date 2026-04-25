@@ -27,12 +27,12 @@
 | GSR-DOC-001 | Backend Foundation | 2 | complete |
 
 ### Reference Documents (non-buildable)
-| Doc ID | Title | Source |
-|--------|-------|--------|
-| GSR-REF-EXEC-FRAMEWORK | Executive Framework | Roy E. Dunn (Feb 2026) |
-| GSR-REF-AGENT-ARCHITECTURE | Agent Team Architecture | Roy E. Dunn (Mar 2026) |
-| GSR-REF-EXECUTIVE-SUMMARY | Executive Summary | Roy E. Dunn (Feb 2026) |
-| GSR-REF-OPENCLAW-IMPLEMENTATION | OpenClaw Implementation Guide | Roy E. Dunn (Mar 2026) |
+| Doc ID | Title | Filename | Source |
+|--------|-------|----------|--------|
+| GSR-REF-001 | Executive Framework | `GSR-REF-001-EXECUTIVE-FRAMEWORK.md` | Roy E. Dunn (Feb 2026) |
+| GSR-REF-002 | Agent Team Architecture | `GSR-REF-002-AGENT-ARCHITECTURE.md` | Roy E. Dunn (Mar 2026) |
+| GSR-REF-003 | Executive Summary | `GSR-REF-003-EXECUTIVE-SUMMARY.md` | Roy E. Dunn (Feb 2026) |
+| GSR-REF-004 | Implementation Guide | `GSR-REF-004-IMPLEMENTATION-GUIDE.md` | Roy E. Dunn (Mar 2026) |
 
 ### Reference Data
 | File | Records | Description |
@@ -41,8 +41,11 @@
 | references/RTLT-TAXONOMY.md | — | Discipline taxonomy reference |
 
 ## Conventions
-- **Doc IDs:** GSR-DOC-NNN for buildable specs, GSR-REF-XXX for reference docs
-- **Frontmatter required** on all GSR-DOC files (see GSR-DOC-TEMPLATE.md)
-- **One doc per buildable unit** — scoped to what one Claude Code session can execute and verify
-- **blocks_on** references other GSR-DOC IDs, not vague descriptions
-- **Acceptance criteria** must be testable — "page renders" not "page looks good"
+- **Canonical reference:** [`NAMING-CONVENTIONS.md`](./NAMING-CONVENTIONS.md) is the single source of truth for filenames, folders, and structural rules. Read it before adding or renaming any doc.
+- **Doc IDs:** `GSR-DOC-NNN-FEATURE-NAME.md` for buildable specs, `GSR-REF-NNN-TOPIC.md` for reference docs.
+- **Frontmatter required** on all GSR-DOC and GSR-REF files (see `GSR-DOC-TEMPLATE.md`).
+- **One doc per buildable unit** — multi-numbered filenames are forbidden. Each doc is scoped to what one Claude Code session can execute and verify.
+- **No version suffixes** — supersede by archiving older versions to `docs/journal/` with `SUPERSEDED-` prefix.
+- **blocks_on** references other GSR-DOC IDs, not vague descriptions.
+- **Acceptance criteria** must be testable — "page renders" not "page looks good".
+- **Folder layout:** `docs/design/` (specs + refs), `docs/prompts/` (Claude Code build prompts), `docs/journal/` (status snapshots, archive), `docs/agents/` (agent operating docs).

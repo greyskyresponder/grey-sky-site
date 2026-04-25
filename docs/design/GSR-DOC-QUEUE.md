@@ -6,8 +6,8 @@ classification: INTERNAL — DEVELOPMENT REFERENCE
 status: active
 author: Roy E. Dunn
 created: 2026-04-09
-updated: 2026-04-09
-notes: Canonical index. ATLAS scans this to determine build readiness. Nothing gets built without a design doc. Nothing gets a design doc without a number here.
+updated: 2026-04-24
+notes: Canonical index. ATLAS scans this to determine build readiness. Nothing gets built without a design doc. Nothing gets a design doc without a number here. Filename and structure rules live in NAMING-CONVENTIONS.md — read it before adding entries.
 ---
 
 # Grey Sky Responder Society — Design Document Queue
@@ -88,8 +88,8 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 |--------|-------|----------|--------|-----------|-------|
 | GSR-DOC-200 | Authentication — Registration + Login | CRITICAL | DRAFT | DOC-002, DOC-004 | NextAuth.js v5, credentials provider, bcrypt, JWT, role-based middleware. MFA placeholder. |
 | GSR-DOC-201 | Member Dashboard — Layout + Navigation | CRITICAL | DRAFT | DOC-200 | Sidebar (desktop), bottom nav (mobile). Home: welcome, status, balance, activity. |
-| GSR-DOC-202 | Member Profile — View + Edit | CRITICAL | DRAFT | DOC-201, DOC-003 | Profile fields, privacy controls. What agencies see vs. private. |
-| GSR-DOC-203 | Deployment Records — List + Create + Detail | CRITICAL | DRAFT | DOC-201, DOC-003 | Record list, filters, create form (incident, position, dates, supervisor), detail with verification badge. |
+| GSR-DOC-202 | Member Profile — View + Edit | CRITICAL | DRAFT | DOC-201, DOC-003 | Profile fields, privacy controls. What agencies see vs. private. File: `GSR-DOC-202-MEMBER-PROFILE.md`. Split from former combined doc on 2026-04-24. |
+| GSR-DOC-203 | Deployment Records — List + Create + Detail | CRITICAL | DRAFT | DOC-201, DOC-003 | ICS 222 Response Report. File: `GSR-DOC-203-DEPLOYMENT-RECORDS.md`. Split from former combined doc on 2026-04-24. |
 | GSR-DOC-204 | Incidents — Search + Create | HIGH | DRAFT | DOC-002 | Incident registry: search existing, create new. Used by deployment records. |
 | GSR-DOC-205 | Sky Points — Balance + History + Purchase | HIGH | DRAFT | DOC-201 | Balance, ledger history, Stripe checkout for purchases. OD-03 must be resolved. |
 | GSR-DOC-206 | Document Library — Upload + Categorize + Link | HIGH | DRAFT | DOC-201 | Upload, categorize, link to records/pathways. Storage abstraction layer. |
@@ -113,10 +113,10 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 
 | Doc ID | Title | Priority | Status | Blocks On | Notes |
 |--------|-------|----------|--------|-----------|-------|
-| GSR-DOC-400 | Validation Request — Send + Track | CRITICAL | DRAFT | DOC-203, DOC-205 | 360 validation, 10 Sky Points, UUID token, email to validator, 30-day expiration. |
-| GSR-DOC-401 | Validation Response — External Form | CRITICAL | DRAFT | DOC-400 | Public /validate/:token page. Attestation, legal acceptance. No account required. |
-| GSR-DOC-402 | Evaluation Request — Send + Track | CRITICAL | DRAFT | DOC-203, DOC-205 | ICS 225 evaluation, 20 Sky Points, five performance areas rated 1–5. |
-| GSR-DOC-403 | Evaluation Response — External Form | CRITICAL | DRAFT | DOC-402 | Public /evaluate/:token. Five ratings, commentary, attestation. No account required. |
+| GSR-DOC-400 | Validation Request — Send + Track | CRITICAL | APPROVED | DOC-203, DOC-205 | Member-side request flow. 10 Sky Coins, UUID token, 30-day expiration. File: `GSR-DOC-400-VALIDATION-REQUEST.md`. Split from former combined doc on 2026-04-24. |
+| GSR-DOC-401 | Validation Response — External Public Form | CRITICAL | APPROVED | DOC-400 | Public /validate/:token. SECURITY DEFINER access only. File: `GSR-DOC-401-VALIDATION-RESPONSE.md`. |
+| GSR-DOC-402 | Evaluation Request — Send + Track | CRITICAL | APPROVED | DOC-203, DOC-205 | Member-side request flow. ICS-225, 15 Sky Coins. File: `GSR-DOC-402-EVALUATION-REQUEST.md`. Split from former combined doc on 2026-04-24. |
+| GSR-DOC-403 | Evaluation Response — External Public Form | CRITICAL | APPROVED | DOC-402 | Public /evaluate/:token. Five ratings, commentary, attestation. File: `GSR-DOC-403-EVALUATION-RESPONSE.md`. |
 | GSR-DOC-404 | QRB — Qualification Review Board | HIGH | DRAFT | DOC-400, DOC-402 | Human review layer. Assigned reviewers, votes, decision rationale, appeals. |
 | GSR-DOC-405 | Notification Service — Email Templates | HIGH | DRAFT | DOC-400, DOC-402 | Transactional email: validations, evaluations, status updates, certs. SendGrid. |
 
@@ -166,14 +166,16 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 
 | Doc ID | Title | Priority | Status | Blocks On | Notes |
 |--------|-------|----------|--------|-----------|-------|
-| GSR-DOC-900 | Security Hardening | CRITICAL | DRAFT | DOC-004 | Nation-state threat model. Supabase RLS, CSP, CORS, CSRF, anomaly detection, token security, encryption, attack surface inventory. |
-| GSR-DOC-901 | Audit Logging + Tamper Evidence | CRITICAL | DRAFT | DOC-002 | Tamper-evident logging (cryptographic chaining). Full event scope. Retention policy. Anomaly alerting. |
-| GSR-DOC-902 | Input Validation — Zod Schemas | HIGH | DRAFT | DOC-002 | Zod schemas all endpoints. Defense-in-depth: edge, application, database layers. |
-| GSR-DOC-903 | API Error Handling + Response Format | HIGH | DRAFT | DOC-004 | Consistent errors. No internal state leakage to unauthenticated callers. |
-| GSR-DOC-904 | Admin Dashboard — Platform Management | HIGH | DRAFT | DOC-200, DOC-600 | Platform admin. Elevated auth. Member/engagement/revenue management. |
-| GSR-DOC-905 | Sky Points Ledger — Integrity + Triggers | HIGH | DRAFT | DOC-002 | Append-only trigger. Write auth tightly scoped — no client-side coin minting. |
-| GSR-DOC-906 | Backup, Recovery + Incident Response | CRITICAL | DRAFT | DOC-004 | Destructive attack assumption. RPO/RTO targets. Geo-separated backups. IR plan. Credential revocation. |
-| GSR-DOC-907 | Data Classification + Privacy Controls | HIGH | DRAFT | DOC-001 | Field-level classification. Supabase RLS mapping. GDPR/state privacy. PII handling for attestations. |
+| GSR-DOC-900 | Security Hardening | CRITICAL | DRAFT | DOC-004 | Nation-state threat model. Supabase RLS, CSP, CORS, CSRF, anomaly detection, token security, encryption, attack surface inventory. File: `GSR-DOC-900-SECURITY-HARDENING.md`. |
+| GSR-DOC-901 | Security Patch — password_hash Removal, RLS Tightening, Admin Client Fix | CRITICAL | DRAFT | — | Audit-driven security patch. File: `GSR-DOC-901-SECURITY-PATCH.md`. **Numbering note (2026-04-24):** This file claimed 901 before the planned "Audit Logging + Tamper Evidence" entry was authored. Audit Logging will be renumbered to a free slot when authored. |
+| GSR-DOC-902 | Testing Foundation — Vitest Setup + Critical Path Test Suites | CRITICAL | DRAFT | — | Audit-driven. Zero tests existed across 40+ TODO markers; this installs the framework. File: `GSR-DOC-902-TESTING-FOUNDATION.md`. **Numbering note (2026-04-24):** This file claimed 902 before the planned "Input Validation — Zod Schemas" entry was authored. Zod schema work will be renumbered to a free slot when authored. |
+| GSR-DOC-903 | API Error Handling + Response Format | HIGH | DRAFT | DOC-004 | Consistent errors. No internal state leakage to unauthenticated callers. (Not yet authored.) |
+| GSR-DOC-904 | Admin Dashboard — Platform Management | HIGH | DRAFT | DOC-200, DOC-600 | Platform admin. Elevated auth. Member/engagement/revenue management. (Not yet authored.) |
+| GSR-DOC-905 | Sky Points Ledger — Integrity + Triggers | HIGH | DRAFT | DOC-002 | Append-only trigger. Write auth tightly scoped — no client-side coin minting. (Not yet authored.) |
+| GSR-DOC-906 | Backup, Recovery + Incident Response | CRITICAL | DRAFT | DOC-004 | Destructive attack assumption. RPO/RTO targets. Geo-separated backups. IR plan. Credential revocation. (Not yet authored.) |
+| GSR-DOC-907 | Data Classification + Privacy Controls | HIGH | DRAFT | DOC-001 | Field-level classification. Supabase RLS mapping. GDPR/state privacy. PII handling for attestations. (Not yet authored.) |
+| GSR-DOC-908 | Audit Logging + Tamper Evidence (was DOC-901) | CRITICAL | DRAFT | DOC-002 | Tamper-evident logging (cryptographic chaining). Full event scope. Retention policy. Anomaly alerting. (Renumbered from 901 on 2026-04-24 to resolve filename conflict — file not yet authored.) |
+| GSR-DOC-909 | Input Validation — Zod Schemas (was DOC-902) | HIGH | DRAFT | DOC-002 | Zod schemas all endpoints. Defense-in-depth: edge, application, database layers. (Renumbered from 902 on 2026-04-24 — file not yet authored.) |
 
 ---
 

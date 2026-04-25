@@ -6,17 +6,22 @@ Professional credentialing and team assessment platform for disaster responders,
 ## Design Doc Pipeline
 All builds follow the design doc workflow. Before writing code:
 
-1. Read `docs/design/README.md` — phase map, conventions, workflow
-2. Read `docs/design/GSR-DOC-000-PLATFORM-SPEC.md` — canonical platform reference (schema, API, workflows, security)
-3. Read the specific GSR-DOC-NNN assigned for this session
+1. Read `docs/design/NAMING-CONVENTIONS.md` — filename, folder, and structural rules (binding)
+2. Read `docs/design/README.md` — phase map and workflow
+3. Read `docs/design/GSR-DOC-000-PLATFORM-SPEC.md` — canonical platform reference (schema, API, workflows, security)
+4. Read the specific GSR-DOC-NNN assigned for this session
+5. If a build prompt exists, read `docs/prompts/GSR-DOC-NNN-PROMPT.md`
 
 Only build what the design doc specifies. Do not freelance features.
 
 ## Reference Data
 - `references/FEMA_RTLT_NQS_Database.json` — 625 FEMA RTLT records (positions, typing definitions, PTBs, skillsets)
 - `references/RTLT-TAXONOMY.md` — discipline taxonomy
-- `docs/GREY_SKY_EXECUTIVE_FRAMEWORK.md` — business model, revenue, standards framework
-- `docs/design/GSR-REF-*.md` — additional reference docs (agent architecture, executive summary, implementation guide)
+- `docs/design/GSR-REF-001-EXECUTIVE-FRAMEWORK.md` — business model, revenue, standards framework
+- `docs/design/GSR-REF-002-AGENT-ARCHITECTURE.md` — nine-agent team roles and deployment model
+- `docs/design/GSR-REF-003-EXECUTIVE-SUMMARY.md` — platform overview for stakeholders
+- `docs/design/GSR-REF-004-IMPLEMENTATION-GUIDE.md` — build sequence, toolchain, deployment
+- `docs/agents/CLAUDE-CODE-DISCIPLINE.md` — operating discipline for Claude Code sessions
 
 ## Stack
 - Next.js 16 (App Router, Server Components)

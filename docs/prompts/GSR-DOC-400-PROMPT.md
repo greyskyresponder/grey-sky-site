@@ -13,7 +13,7 @@
 
 Build the 360 peer validation flow. This is the simpler of the two — no ratings, just confirm/deny with optional comments.
 
-**Design doc:** `docs/design/GSR-DOC-400-401-VALIDATION.md`
+**Design docs:** `docs/design/GSR-DOC-400-VALIDATION-REQUEST.md` and `docs/design/GSR-DOC-401-VALIDATION-RESPONSE.md`
 
 **Deliverables:**
 1. `src/lib/validation/actions.ts` — 4 server actions
@@ -30,7 +30,7 @@ Build the 360 peer validation flow. This is the simpler of the two — no rating
 
 Build the ICS-225 performance evaluation flow. Same pattern as validation, plus 5-area rating UI.
 
-**Design doc:** `docs/design/GSR-DOC-402-403-EVALUATION.md`
+**Design docs:** `docs/design/GSR-DOC-402-EVALUATION-REQUEST.md` and `docs/design/GSR-DOC-403-EVALUATION-RESPONSE.md`
 
 **Deliverables:**
 1. `src/lib/evaluation/actions.ts` — 4 server actions
@@ -52,10 +52,12 @@ Read these before starting:
 
 | File | Purpose |
 |------|---------|
-| `docs/design/GSR-DOC-400-401-VALIDATION.md` | Full validation spec |
-| `docs/design/GSR-DOC-402-403-EVALUATION.md` | Full evaluation spec |
-| `docs/prompts/CLAUDE-CODE-DISCIPLINE.md` | Discipline protocol (mandatory) |
-| `docs/prompts/CLAUDE-APP-STATUS-2026-04-15.md` | Current platform status |
+| `docs/design/GSR-DOC-400-VALIDATION-REQUEST.md` | Validation request flow (member-side) |
+| `docs/design/GSR-DOC-401-VALIDATION-RESPONSE.md` | Public validation form |
+| `docs/design/GSR-DOC-402-EVALUATION-REQUEST.md` | Evaluation request flow (member-side) |
+| `docs/design/GSR-DOC-403-EVALUATION-RESPONSE.md` | Public evaluation form |
+| `docs/agents/CLAUDE-CODE-DISCIPLINE.md` | Discipline protocol (mandatory) |
+| `docs/journal/STATUS-2026-04-15.md` | Platform status as of 2026-04-15 |
 | `src/lib/stripe/actions.ts` | Server action pattern |
 | `src/lib/coins/actions.ts` | Coin spend pattern (`spendCoins()`) |
 | `src/components/dashboard/records/RecordForm.tsx` | Form component pattern |
@@ -84,7 +86,7 @@ Read these before starting:
 
 ## Discipline Protocol
 
-Follow `docs/prompts/CLAUDE-CODE-DISCIPLINE.md` in full:
+Follow `docs/agents/CLAUDE-CODE-DISCIPLINE.md` in full:
 - Self-Review Gate (Security, Doctrine, UX, Error Handling, Test Coverage)
 - Investigation Protocol if debugging
 - Safety Guardrails

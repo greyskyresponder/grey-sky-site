@@ -2,7 +2,8 @@
 
 **Generated:** 2026-04-14
 **Purpose:** Separate build prompts for parallel Claude Code terminals
-**Source:** Architecture Agent (Claude App), derived from CLAUDE-APP-STATUS-UPDATE-2026-04-13
+**Source:** Architecture Agent (Claude App), derived from `docs/journal/STATUS-2026-04-13.md`
+**Filename history:** Originally `00-BUILD-PACKAGE-INDEX.md`. Renamed to `PACKAGE-2026-04-15-INDEX.md` on 2026-04-24 per `docs/design/NAMING-CONVENTIONS.md`.
 
 ---
 
@@ -29,24 +30,24 @@ Five self-contained build files, each designed for a separate Claude Code termin
 
 | File | Doc ID | Description | Can Parallel? |
 |------|--------|-------------|---------------|
-| `01-BUILD-DOC-102.md` | GSR-DOC-102 | Organizations + Agencies public page | ✅ Yes — no DB, no dependencies |
-| `02-BUILD-DOC-205.md` | GSR-DOC-205 | Sky Coins economy — DB, types, UI | ✅ Yes — new tables, no conflicts |
-| `03-BUILD-DOC-900.md` | GSR-DOC-900 | Security hardening — MFA, CSP, rate limiting | ⚠️ After DOC-205 migration (migration ordering) |
-| `04-BUILD-DOC-207.md` | GSR-DOC-207 | Stripe integration — membership + coin purchases | ⛔ After DOC-205 (needs coin tables) |
-| `05-BUILD-DOC-101.md` | GSR-DOC-101 | Membership page copy update | ⛔ After DOC-205 (needs coin pricing) |
+| `GSR-DOC-102-PROMPT.md` | GSR-DOC-102 | Organizations + Agencies public page | ✅ Yes — no DB, no dependencies |
+| `GSR-DOC-205-PROMPT.md` | GSR-DOC-205 | Sky Coins economy — DB, types, UI | ✅ Yes — new tables, no conflicts |
+| `GSR-DOC-900-PROMPT.md` | GSR-DOC-900 | Security hardening — MFA, CSP, rate limiting | ⚠️ After DOC-205 migration (migration ordering) |
+| `GSR-DOC-207-PROMPT.md` | GSR-DOC-207 | Stripe integration — membership + coin purchases | ⛔ After DOC-205 (needs coin tables) |
+| `GSR-DOC-101-PROMPT.md` | GSR-DOC-101 | Membership page copy update | ⛔ After DOC-205 (needs coin pricing) |
 
 ### Recommended Execution Order
 
 **Wave 1 (parallel):**
-- Terminal A: `01-BUILD-DOC-102.md` — Organizations page (static, no DB)
-- Terminal B: `02-BUILD-DOC-205.md` — Sky Coins economy (new migration + UI)
+- Terminal A: `GSR-DOC-102-PROMPT.md` — Organizations page (static, no DB)
+- Terminal B: `GSR-DOC-205-PROMPT.md` — Sky Coins economy (new migration + UI)
 
 **Wave 2 (after Wave 1 merges):**
-- Terminal C: `03-BUILD-DOC-900.md` — Security hardening (migration after DOC-205)
+- Terminal C: `GSR-DOC-900-PROMPT.md` — Security hardening (migration after DOC-205)
 
 **Wave 3 (after DOC-205 confirmed):**
-- Terminal D: `04-BUILD-DOC-207.md` — Stripe integration
-- Terminal E: `05-BUILD-DOC-101.md` — Membership page copy refresh
+- Terminal D: `GSR-DOC-207-PROMPT.md` — Stripe integration
+- Terminal E: `GSR-DOC-101-PROMPT.md` — Membership page copy refresh
 
 ### Not In This Package (and why)
 
