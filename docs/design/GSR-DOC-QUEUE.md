@@ -118,7 +118,7 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 | GSR-DOC-402 | Evaluation Request — Send + Track | CRITICAL | APPROVED | DOC-203, DOC-205 | Member-side request flow. ICS-225, 15 Sky Coins. File: `GSR-DOC-402-EVALUATION-REQUEST.md`. Split from former combined doc on 2026-04-24. |
 | GSR-DOC-403 | Evaluation Response — External Public Form | CRITICAL | APPROVED | DOC-402 | Public /evaluate/:token. Five ratings, commentary, attestation. File: `GSR-DOC-403-EVALUATION-RESPONSE.md`. |
 | GSR-DOC-404 | QRB — Qualification Review Board | HIGH | DRAFT | DOC-400, DOC-402 | Human review layer. Assigned reviewers, votes, decision rationale, appeals. |
-| GSR-DOC-405 | Notification Service — Email Templates | HIGH | DRAFT | DOC-400, DOC-402 | Transactional email: validations, evaluations, status updates, certs. SendGrid. |
+| GSR-DOC-405 | Notification Service — Transactional Email | CRITICAL | APPROVED | DOC-400, DOC-402 | SendGrid + React Email + noreply@greysky.dev. Tamper-evident dispatch log. Closes the validation/evaluation delivery gap. File: `GSR-DOC-405-NOTIFICATION-SERVICE.md`. Build prompt: `docs/prompts/GSR-DOC-405-PROMPT.md`. Authored 2026-04-24. |
 
 ---
 
@@ -192,25 +192,25 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 
 ## Open Decision Points
 
-Inherited from GSR-DOC-000. Each blocks one or more design docs until resolved.
+Inherited from GSR-DOC-000. Each blocks one or more design docs until resolved. Memos for the open items live in `docs/decisions/OD-NN-*.md` (authored 2026-04-24, awaiting Roy's decisions).
 
-| ID | Decision | Blocks | Phase |
-|----|----------|--------|-------|
-| OD-01 | MFA provider: Azure AD B2C or alternative? | DOC-200 | 2 |
-| OD-02 | Stripe Identity: integrate at registration or defer? | DOC-200, DOC-207 | 2 |
-| OD-03 | Sky Points: 100 or 1,000 with $100 membership? Reconcile DOC-000 vs. earlier spec. | DOC-205 | 2 |
-| OD-04 | Self-assessment form: single universal template with RTLT-driven Sections 4–6, or team-type-specific variants? | DOC-603 | 6 |
-| OD-05 | Assessor report: same team-type variants question as OD-04. | DOC-605, DOC-606 | 6 |
-| OD-06 | Organization billing: invoicing mechanism for Direct Fee Only track? | DOC-613 | 6 |
-| OD-07 | QRB composition: who serves, selection, quorum rules? | DOC-404 | 4 |
-| OD-08 | Credential expiration period: 1 year, 2 years, or discipline-specific? | DOC-503 | 5 |
-| OD-09 | Verification portal domain: greyskyresponder.net confirmed? | DOC-502 | 5 |
-| OD-10 | Public profile visibility: member directory or verification-only? | DOC-202 | 2 |
-| OD-11 | ATLAS hosting: DigitalOcean, Linode, or other VPS? | DOC-300 | 3 |
-| OD-12 | OpenClaw config structure: Roy to share existing patterns. | DOC-301 | 3 |
-| OD-13 | Domain renewal: greyskyresponder.com expires Oct 2026. | — | 0 |
-| OD-14 | ✅ RESOLVED: Next.js 16 + Supabase per CLAUDE.md. greysky.dev confirms. | — | 0 |
-| OD-15 | Sky Coins spend categories: membership page lists items not in spec. Expand or tighten? | DOC-101, DOC-205 | 1/2 |
+| ID | Decision | Blocks | Phase | Memo |
+|----|----------|--------|-------|------|
+| OD-01 | MFA provider: Azure AD B2C or alternative? | DOC-200 | 2 | resolved (defer) |
+| OD-02 | Stripe Identity: integrate at registration or defer? | DOC-200, DOC-207 | 2 | resolved (defer) |
+| OD-03 | Sky Points: 100 or 1,000 with $100 membership? | DOC-205 | 2 | resolved (per coin_economy_reconcile migration) |
+| OD-04 | Self-assessment form: universal vs. team-type-specific? | DOC-603 | 6 | `docs/decisions/OD-04-SELF-ASSESSMENT-FORM.md` |
+| OD-05 | Assessor report: universal vs. team-type-specific? | DOC-605, DOC-606 | 6 | `docs/decisions/OD-05-ASSESSOR-REPORT.md` |
+| OD-06 | Organization billing: invoicing mechanism for Direct Fee Only track? | DOC-613 | 6 | `docs/decisions/OD-06-ORG-BILLING.md` |
+| OD-07 | QRB composition: who serves, selection, quorum rules? | DOC-404 | 4 | `docs/decisions/OD-07-QRB-COMPOSITION.md` |
+| OD-08 | Credential expiration period | DOC-503 | 5 | `docs/decisions/OD-08-CREDENTIAL-EXPIRATION.md` |
+| OD-09 | Verification portal domain | DOC-502 | 5 | `docs/decisions/OD-09-VERIFICATION-DOMAIN.md` |
+| OD-10 | Public profile visibility | DOC-202 | 2 | resolved (verification-only by default) |
+| OD-11 | ATLAS hosting (VPS provider) | DOC-300 | 3 | `docs/decisions/OD-11-ATLAS-VPS.md` |
+| OD-12 | OpenClaw config structure | DOC-301 | 3 | `docs/decisions/OD-12-OPENCLAW-CONFIG.md` |
+| OD-13 | Domain renewal: greyskyresponder.com expires Oct 2026 | — | 0 | calendar item (covered indirectly by OD-09 memo) |
+| OD-14 | Stack decision | — | 0 | resolved (Next.js 16 + Supabase) |
+| OD-15 | Sky Coins spend categories alignment | DOC-101, DOC-205 | 1/2 | open (copy reconciliation; no full memo authored) |
 
 ---
 

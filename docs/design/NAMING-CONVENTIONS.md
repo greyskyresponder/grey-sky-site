@@ -23,6 +23,7 @@ Every doc in this repo is read by humans, agents, or build tooling. Inconsistent
 docs/
 ├── design/                  Design specs and reference docs (the build authority)
 ├── prompts/                 Self-contained Claude Code build prompts
+├── decisions/               Decision memos (ADR-style) — one per open OD point
 ├── journal/                 Dated status snapshots, rolling logs, archive manifests
 ├── agents/                  Agent role definitions and operating discipline
 ├── NAMING-CONVENTIONS.md    Pointer to docs/design/NAMING-CONVENTIONS.md
@@ -32,6 +33,7 @@ docs/
 
 `docs/design/` is the only folder Claude Code reads as authoritative spec.
 `docs/prompts/` is the only folder ATLAS pulls execution prompts from.
+`docs/decisions/` records open and closed decisions that gate or shaped design docs. Each memo is referenced from the design docs it unblocks.
 `docs/journal/` is append-only history. Nothing in journal/ drives a build.
 `docs/agents/` defines how each agent (Claude App, Claude Code, ATLAS) operates.
 
@@ -130,6 +132,37 @@ Examples:
 - `CLAUDE-APP-ARCHITECT.md`
 - `CLAUDE-APP-ONBOARDING.md`
 - `CLAUDE-CODE-DISCIPLINE.md`
+
+### Decision Memos — `docs/decisions/`
+
+```
+OD-NN-TOPIC.md
+```
+
+- `NN` is the OD number from `GSR-DOC-QUEUE.md` § Open Decision Points.
+- One memo per decision point, regardless of status (open or closed).
+- Each memo records: context, options with tradeoffs, recommendation, decision (when made), and which design docs it unblocks.
+- Closed decisions are kept — they preserve the reasoning trail.
+
+Examples:
+- `OD-04-SELF-ASSESSMENT-FORM.md`
+- `OD-07-QRB-COMPOSITION.md`
+- `OD-11-ATLAS-VPS.md`
+
+Frontmatter fields specific to decision memos:
+
+```yaml
+---
+od_id: OD-04
+title: "Short Decision Title"
+status: open | resolved | superseded
+decided_by: Roy E. Dunn
+decided_on: YYYY-MM-DD     # only when resolved
+unblocks:
+  - GSR-DOC-XXX
+  - GSR-DOC-YYY
+---
+```
 
 ---
 
