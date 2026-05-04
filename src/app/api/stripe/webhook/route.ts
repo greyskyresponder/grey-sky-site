@@ -23,6 +23,8 @@ export const dynamic = 'force-dynamic';
 const MEMBERSHIP_GRANT_COINS = 1000;
 // Eleven months in ms — guards against double-grant on same renewal cycle.
 const ELEVEN_MONTHS_MS = 11 * 30 * 24 * 60 * 60 * 1000;
+// GSR-DOC-208: 14-day grace window after first invoice.payment_failed.
+const GRACE_PERIOD_MS = 14 * 24 * 60 * 60 * 1000;
 
 type AdminClient = ReturnType<typeof createAdminClient>;
 
@@ -115,6 +117,12 @@ export async function POST(request: NextRequest) {
         break;
       case 'customer.subscription.deleted':
         await handleSubscriptionDeleted(admin, event, errors);
+        break;
+      case 'invoice.payment_failed':
+        await handleInvoicePaymentFailed(admin, event, errors);
+        break;
+      case 'charge.refunded':
+        await handleChargeRefunded(admin, event, errors);
         break;
       default:
         // Unhandled event types are still ack'd — we just don't act on them.
@@ -570,6 +578,221 @@ async function handleSubscriptionDeleted(
     'freeze_coin_account',
     ctx,
     () => admin.from('coin_accounts').update({ frozen: true }).eq('user_id', userId),
+    errors,
+  );
+}
+
+// ── GSR-DOC-208 handlers ──────────────────────────────────
+
+/**
+ * invoice.payment_failed — start (or extend) the 14-day grace period.
+ *
+ * Behavior:
+ *   * Set users.spending_blocked = true so coin spends are immediately denied.
+ *   * On FIRST failure for the current period, set grace_period_started_at = now()
+ *     and grace_period_ends_at = now() + 14 days. Do NOT touch verified_active —
+ *     verification lookups still succeed during grace.
+ *   * Subsequent failures within an open grace window are no-ops on the timestamps
+ *     (Stripe Smart Retries can fire repeatedly).
+ *   * After the grace window closes, customer.subscription.deleted (or .updated
+ *     to canceled) handles the actual deactivation.
+ *
+ * Mirrors state into stripe_subscriptions if a row exists.
+ */
+async function handleInvoicePaymentFailed(
+  admin: AdminClient,
+  event: Stripe.Event,
+  errors: OpError[],
+) {
+  const invoice = event.data.object as Stripe.Invoice;
+  const customerId =
+    typeof invoice.customer === 'string' ? invoice.customer : invoice.customer?.id ?? null;
+  if (!customerId) return;
+
+  // Subscription invoices only — coin pack one-time payments don't create grace state.
+  const isSubscriptionInvoice = Boolean(
+    (invoice as unknown as { subscription?: string }).subscription ||
+      invoice.lines?.data?.some((line) =>
+        typeof (line as { subscription?: unknown }).subscription === 'string',
+      ),
+  );
+  if (!isSubscriptionInvoice) return;
+
+  const { data: user, error: userErr } = await admin
+    .from('users')
+    .select('id, grace_period_started_at, grace_period_ends_at')
+    .eq('stripe_customer_id', customerId)
+    .single();
+
+  if (userErr) {
+    errors.push({
+      operation: 'lookup_user_by_customer',
+      event_id: event.id,
+      event_type: event.type,
+      user_id: null,
+      context: { customer_id: customerId },
+      message: errorMessage(userErr),
+      code: extractErrorCode(userErr),
+    });
+    return;
+  }
+  if (!user) return;
+
+  const userId = user.id as string;
+  const ctx: OpContext = {
+    event_id: event.id,
+    event_type: event.type,
+    user_id: userId,
+    extra: { customer_id: customerId },
+  };
+
+  // First failure in this cycle? Open the grace window.
+  const existingEnd = user.grace_period_ends_at
+    ? new Date(user.grace_period_ends_at as string).getTime()
+    : 0;
+  const now = Date.now();
+  const isFirstFailure = existingEnd === 0 || existingEnd < now;
+
+  const update: Record<string, unknown> = {
+    spending_blocked: true,
+  };
+  if (isFirstFailure) {
+    update.grace_period_started_at = new Date(now).toISOString();
+    update.grace_period_ends_at = new Date(now + GRACE_PERIOD_MS).toISOString();
+  }
+
+  await runOp(
+    'open_grace_period',
+    ctx,
+    () => admin.from('users').update(update).eq('id', userId),
+    errors,
+  );
+
+  // Mirror into stripe_subscriptions if we have a row for this customer.
+  if (isFirstFailure) {
+    await runOp(
+      'mirror_grace_to_subscription',
+      ctx,
+      () =>
+        admin
+          .from('stripe_subscriptions')
+          .update({
+            grace_period_started_at: update.grace_period_started_at,
+            grace_period_ends_at: update.grace_period_ends_at,
+            spending_blocked: true,
+            status: 'past_due',
+          })
+          .eq('stripe_customer_id', customerId),
+      errors,
+    );
+  }
+}
+
+/**
+ * charge.refunded — reverse a coin pack grant.
+ *
+ * Looks up the matching stripe_coin_pack_purchases row by payment_intent_id,
+ * calls reverse_coin_grant() to issue a 'refund' ledger entry (idempotent via
+ * processed_idempotency_keys keyed on the Stripe event id), and stamps
+ * refunded_at on the purchase record.
+ *
+ * Membership refunds are not handled here — those go through
+ * customer.subscription.deleted with the existing freeze logic. A refund of
+ * a membership charge is rare and would be reconciled manually via
+ * admin_adjustment.
+ */
+async function handleChargeRefunded(
+  admin: AdminClient,
+  event: Stripe.Event,
+  errors: OpError[],
+) {
+  const charge = event.data.object as Stripe.Charge;
+  const paymentIntentId =
+    typeof charge.payment_intent === 'string'
+      ? charge.payment_intent
+      : charge.payment_intent?.id ?? null;
+  if (!paymentIntentId) return;
+
+  const { data: purchase, error: purchaseErr } = await admin
+    .from('stripe_coin_pack_purchases')
+    .select('id, user_id, ledger_entry_id, refunded_at')
+    .eq('stripe_payment_intent_id', paymentIntentId)
+    .maybeSingle();
+
+  if (purchaseErr) {
+    errors.push({
+      operation: 'lookup_coin_pack_purchase',
+      event_id: event.id,
+      event_type: event.type,
+      user_id: null,
+      context: { payment_intent_id: paymentIntentId },
+      message: errorMessage(purchaseErr),
+      code: extractErrorCode(purchaseErr),
+    });
+    return;
+  }
+  if (!purchase) {
+    // Refund of a charge that wasn't for a coin pack (e.g. membership) — ignore here.
+    return;
+  }
+  if (purchase.refunded_at) {
+    // Already reversed in a prior delivery of this event.
+    return;
+  }
+  if (!purchase.ledger_entry_id) {
+    // The original purchase never produced a ledger entry — nothing to reverse.
+    // (Would imply a prior failure between charge and credit_coins.)
+    errors.push({
+      operation: 'reverse_coin_grant_missing_ledger',
+      event_id: event.id,
+      event_type: event.type,
+      user_id: purchase.user_id as string | null,
+      context: { payment_intent_id: paymentIntentId, purchase_id: purchase.id },
+      message: 'coin pack purchase has no ledger_entry_id; nothing to reverse',
+    });
+    return;
+  }
+
+  const userId = purchase.user_id as string;
+  const ctx: OpContext = {
+    event_id: event.id,
+    event_type: event.type,
+    user_id: userId,
+    extra: { payment_intent_id: paymentIntentId, purchase_id: purchase.id },
+  };
+
+  // Use the Stripe event id as the idempotency key. Replays return the same
+  // reversal id from processed_idempotency_keys without writing a duplicate.
+  const { data: reversalIdResult, error: rpcErr } = await admin.rpc('reverse_coin_grant', {
+    p_original_ledger_entry_id: purchase.ledger_entry_id,
+    p_idempotency_key: event.id,
+    p_reason: 'Stripe charge refund',
+  });
+
+  if (rpcErr) {
+    errors.push({
+      operation: 'reverse_coin_grant',
+      event_id: event.id,
+      event_type: event.type,
+      user_id: userId,
+      context: ctx.extra ?? {},
+      message: errorMessage(rpcErr),
+      code: extractErrorCode(rpcErr),
+    });
+    return;
+  }
+
+  await runOp(
+    'mark_coin_pack_refunded',
+    ctx,
+    () =>
+      admin
+        .from('stripe_coin_pack_purchases')
+        .update({
+          refunded_at: new Date().toISOString(),
+          refund_ledger_entry_id: reversalIdResult ?? null,
+        })
+        .eq('id', purchase.id),
     errors,
   );
 }
