@@ -1,30 +1,29 @@
 # LvSG Technical Handoff — Key Reference (extracted from DOCX)
 
-## Stack (Roy's learning stack — applies to Grey Sky Portal)
+> **NOTE (2026-05-04):** This file originated as a handoff snapshot from the LvSG marketing site. Stack details for **Grey Sky Portal** below have been corrected. The LvSG site (separate repo at `/Users/roydunn/Longview.Website.2026`) was its own decision tree. For Grey Sky Portal canonical stack, see `README.md` and `docs/agents/CLAUDE-APP-ONBOARDING.md`.
+
+## Stack — Grey Sky Portal (authoritative)
 - **Framework:** Next.js 16.1.6 (App Router, Server Components)
 - **UI:** React 19
 - **Language:** TypeScript 5
-- **Styling:** Tailwind CSS 4 (CSS variables)
+- **Styling:** Tailwind CSS (CSS variables)
 - **Icons:** lucide-react
-- **Fonts:** Playfair Display, Inter, IBM Plex Mono
-- **CMS:** Sanity.io (@sanity/client 7.20.0, GROQ queries, 60s ISR)
-- **Hosting:** Vercel (free tier, auto-deploy on push to main)
-- **DB (Portal):** Supabase (Postgres) — already scaffolded in grey-sky-site
-- **CI/CD:** git push → Vercel auto-deploy
-- **Dev tools:** npm, ESLint, Prettier, Husky + lint-staged
+- **DB / Auth:** Supabase (Postgres + Auth)
+- **Payments:** Stripe (test mode)
+- **Hosting:** Azure Static Web Apps — `greysky-portal`, `rg-greysky-portal`, East US 2, Free tier (NOT Vercel — dropped 2026-04-08)
+- **CMS:** None (Sanity.io dropped 2026-04-10 — never integrated)
+- **CI/CD:** GitHub Actions → Azure SWA on push to `main`
+- **Dev tools:** npm, ESLint, Vitest
 
 ## Accounts
 - **GitHub org:** greyskyresponder (private repos)
-- **Vercel team:** greyskyresponders-projects
-- **Sanity project ID:** i5vzfkqt (org: oOgKpCeeq)
-- **Domain:** longviewsolutionsgroup.com (cutover pending)
+- **Azure resource group:** rg-greysky-portal
+- **Azure SWA:** greysky-portal
+- **Custom domains:** greysky.dev, www.greysky.dev
 
-## LvSG Site Status
-- Sprints 0-6 complete (6 of 26)
-- Live at: longview-lemon.vercel.app
-- 30+ inner pages, 19 CMS documents seeded
-- Next: Sprint 7 (Mapbox, Formspree, launch prep)
-- Local dev path: /Users/roydunn/Longview.Website.2026
+## LvSG Site Status (separate repo, retained for context)
+- Local dev path: `/Users/roydunn/Longview.Website.2026`
+- Stack on that repo is its own decision; do not assume parity with Grey Sky Portal.
 
 ## Grey Sky Portal Status (grey-sky-site/)
 - Marketing site scaffolded (Hero, About, Disciplines, Membership, CTA)

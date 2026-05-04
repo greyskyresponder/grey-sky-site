@@ -375,7 +375,7 @@ Push to the greyskyresponder/grey-sky-site repo on the main branch after each co
 
 ## TECHNICAL NOTES
 
-- This will migrate from Vercel to Azure Container Apps. For now, keep it deployable to Vercel for development, but don't use any Vercel-specific features that can't be moved.
+- Hosting is **Azure Static Web Apps** (`greysky-portal`, East US 2, Free tier). Do not introduce Vercel-specific features, configs, or dependencies. The earlier Vercel-for-dev posture was retired on 2026-04-08.
 - Database will be Azure PostgreSQL Flexible Server in production. Docker PostgreSQL for local dev.
 - File storage will be Azure Blob Storage in production. Local filesystem for dev with an abstraction layer.
 - Email will be SendGrid. For now, log emails to console in dev mode.
