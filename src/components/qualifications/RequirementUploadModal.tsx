@@ -14,12 +14,38 @@ type DocRow = {
   category: DocumentCategory;
 };
 
+/**
+ * Outer shell — gates on slot != null, then renders the inner form
+ * keyed on requirement ID so React remounts (and resets state) automatically
+ * when a different slot is selected. Avoids setState-in-effect lint errors.
+ */
 export default function RequirementUploadModal({
   slot,
   onClose,
   onAttached,
 }: {
   slot: RequirementSlotView | null;
+  onClose: () => void;
+  onAttached: () => void;
+}) {
+  if (!slot) return null;
+
+  return (
+    <RequirementUploadForm
+      key={slot.requirement.id}
+      slot={slot}
+      onClose={onClose}
+      onAttached={onAttached}
+    />
+  );
+}
+
+function RequirementUploadForm({
+  slot,
+  onClose,
+  onAttached,
+}: {
+  slot: RequirementSlotView;
   onClose: () => void;
   onAttached: () => void;
 }) {
@@ -32,16 +58,12 @@ export default function RequirementUploadModal({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
+  // Fetch existing documents on mount (runs once per key/slot)
   useEffect(() => {
-    if (!slot) return;
-    setMode('new');
-    setFile(null);
-    setDocumentDate('');
-    setNotes('');
-    setError(null);
-    setSelectedDocId(null);
+    let cancelled = false;
     (async () => {
       const { data } = await getMyDocuments({ page: 1, per_page: 50 });
+      if (cancelled) return;
       setExisting(
         data.map((d) => ({
           id: d.id,
@@ -51,16 +73,14 @@ export default function RequirementUploadModal({
         }))
       );
     })();
-  }, [slot]);
-
-  if (!slot) return null;
+    return () => { cancelled = true; };
+  }, []);
 
   function suggestedCategory(): DocumentCategory {
-    return (slot!.requirement.document_category ?? 'other') as DocumentCategory;
+    return (slot.requirement.document_category ?? 'other') as DocumentCategory;
   }
 
   function submit() {
-    if (!slot) return;
     setError(null);
 
     startTransition(async () => {

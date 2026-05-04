@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { getPositionRequirements, addPursuit } from '@/lib/actions/requirements';
 import RequirementChecklist from '@/components/qualifications/RequirementChecklist';
 import CompletionBar from '@/components/qualifications/CompletionBar';
+import EmiCourseRecommendations from '@/components/qualifications/EmiCourseRecommendations';
 import type { NimsType } from '@/lib/types/enums';
 
 export const dynamic = 'force-dynamic';
@@ -103,6 +104,8 @@ export default async function PositionRequirementsPage({
           expired={expired}
         />
       </div>
+
+      <EmiCourseRecommendations positionId={positionId} />
 
       <RequirementChecklist slots={slots} />
     </div>

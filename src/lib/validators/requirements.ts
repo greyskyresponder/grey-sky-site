@@ -71,6 +71,18 @@ export const requirementFilterSchema = z.object({
   group_label: z.string().optional(),
 });
 
+export const nimsTypes = ['type1', 'type2', 'type3', 'type4', 'type5'] as const;
+
+export const positionSearchSchema = z.object({
+  query: z.string().max(120).optional().default(''),
+  discipline: z.string().max(120).optional().or(z.literal('')),
+  resource_category: z.string().max(120).optional().or(z.literal('')),
+  nims_type: z.enum(nimsTypes).optional(),
+  limit: z.number().int().min(1).max(100).optional().default(40),
+});
+
+export type PositionSearchInput = z.infer<typeof positionSearchSchema>;
+
 export const verificationQueueFilterSchema = z.object({
   status: z.enum(fulfillmentStatuses).default('pending'),
   requirement_type: z.enum(requirementTypes).optional(),

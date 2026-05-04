@@ -29,6 +29,7 @@ import {
   verifyFulfillmentSchema,
   rejectFulfillmentSchema,
   verificationQueueFilterSchema,
+  positionSearchSchema,
 } from '@/lib/validators/requirements';
 import type {
   PositionRequirement,
@@ -261,19 +262,36 @@ export async function getPositionRequirements(positionId: string): Promise<{
 
 // ── Browse positions (for AddPositionModal) ───────────────
 
-export async function searchPositions(query: string, limit = 30): Promise<{
-  data: Array<{
-    id: string;
-    title: string;
-    rtlt_code: string | null;
-    nims_type: NimsType | null;
-    discipline: string | null;
-    resource_category: string | null;
-  }>;
-  error: string | null;
-}> {
+export type PositionSearchRow = {
+  id: string;
+  title: string;
+  rtlt_code: string | null;
+  nims_type: NimsType | null;
+  discipline: string | null;
+  resource_category: string | null;
+};
+
+/**
+ * Search the FEMA RTLT position catalog. Accepts a free-text query plus
+ * optional discipline / resource_category / nims_type filters used by the
+ * pursuit dashboard's position selector.
+ *
+ * Back-compat: callers passing `(query: string, limit?: number)` still work.
+ */
+export async function searchPositions(
+  input?: unknown,
+  legacyLimit?: number
+): Promise<{ data: PositionSearchRow[]; error: string | null }> {
   const userId = await getAuthUserId();
   if (!userId) return { data: [], error: 'Not authenticated' };
+
+  const raw =
+    typeof input === 'string'
+      ? { query: input, limit: legacyLimit ?? 40 }
+      : (input ?? {});
+  const parsed = positionSearchSchema.safeParse(raw);
+  if (!parsed.success) return { data: [], error: parsed.error.issues[0].message };
+  const { query, discipline, resource_category, nims_type, limit } = parsed.data;
 
   const supabase = await createClient();
   let q = supabase
@@ -281,6 +299,10 @@ export async function searchPositions(query: string, limit = 30): Promise<{
     .select('id, title, rtlt_code, nims_type, discipline, resource_category')
     .order('title', { ascending: true })
     .limit(limit);
+
+  if (discipline) q = q.eq('discipline', discipline);
+  if (resource_category) q = q.eq('resource_category', resource_category);
+  if (nims_type) q = q.eq('nims_type', nims_type);
 
   const needle = (query ?? '').trim();
   if (needle.length > 0) {
@@ -302,6 +324,129 @@ export async function searchPositions(query: string, limit = 30): Promise<{
     })),
     error: null,
   };
+}
+
+/**
+ * Distinct facet values for the position selector filters.
+ * Returns sorted, deduped, non-null disciplines + resource categories.
+ */
+export async function listPositionFacets(): Promise<{
+  disciplines: string[];
+  categories: string[];
+  nims_types: NimsType[];
+  error: string | null;
+}> {
+  const userId = await getAuthUserId();
+  if (!userId)
+    return { disciplines: [], categories: [], nims_types: [], error: 'Not authenticated' };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('positions')
+    .select('discipline, resource_category, nims_type');
+
+  if (error)
+    return { disciplines: [], categories: [], nims_types: [], error: error.message };
+
+  const disciplines = new Set<string>();
+  const categories = new Set<string>();
+  const nimsTypes = new Set<NimsType>();
+  for (const row of data ?? []) {
+    const d = row.discipline as string | null;
+    const c = row.resource_category as string | null;
+    const n = row.nims_type as NimsType | null;
+    if (d) disciplines.add(d);
+    if (c) categories.add(c);
+    if (n) nimsTypes.add(n);
+  }
+  return {
+    disciplines: Array.from(disciplines).sort((a, b) => a.localeCompare(b)),
+    categories: Array.from(categories).sort((a, b) => a.localeCompare(b)),
+    nims_types: Array.from(nimsTypes).sort(),
+    error: null,
+  };
+}
+
+// ── AI assist: EMI course recommendations (stub) ─────────
+//
+// Stub for future embedding-based recommendation. For now: surfaces the
+// outstanding `course` requirements on a pursued position, ordered by group
+// (IS → ICS → EMI Resident) and sort_order. The same shape will be returned
+// when this is replaced by an embedding lookup against the EMI catalog, so
+// callers don't need to change.
+
+export type EmiCourseRecommendation = {
+  requirement_id: string;
+  code: string | null;
+  title: string;
+  group_label: string | null;
+  rationale: string;
+  emi_url: string | null;
+};
+
+/**
+ * Build a list of recommended EMI / FEMA courses for the gaps on a position
+ * the user is pursuing. Considers any `course` requirement whose fulfillment
+ * is missing, rejected, or expired. Verified + pending are excluded.
+ */
+export async function recommendEmiCourses(positionId: string): Promise<{
+  recommendations: EmiCourseRecommendation[];
+  error: string | null;
+}> {
+  const userId = await getAuthUserId();
+  if (!userId) return { recommendations: [], error: 'Not authenticated' };
+  if (!/^[0-9a-f-]{36}$/i.test(positionId))
+    return { recommendations: [], error: 'Invalid position id' };
+
+  const { slots, error } = await getPositionRequirements(positionId);
+  if (error) return { recommendations: [], error };
+
+  const gaps = slots.filter((s) => {
+    if (s.requirement.requirement_type !== 'course') return false;
+    const status = s.fulfillment?.status ?? 'unfulfilled';
+    return status === 'unfulfilled' || status === 'rejected' || status === 'expired';
+  });
+
+  const groupRank = (label: string | null): number => {
+    const order = [
+      'Independent Study (IS)',
+      'ICS Courses',
+      'EMI Resident & Field-Deliverable',
+      'Other Training',
+    ];
+    const i = order.indexOf(label ?? '');
+    return i === -1 ? order.length : i;
+  };
+
+  gaps.sort((a, b) => {
+    const r = groupRank(a.requirement.group_label) - groupRank(b.requirement.group_label);
+    if (r !== 0) return r;
+    return a.requirement.sort_order - b.requirement.sort_order;
+  });
+
+  const recommendations: EmiCourseRecommendation[] = gaps.map((s) => {
+    const code = s.requirement.code;
+    const status = s.fulfillment?.status ?? 'unfulfilled';
+    const reason =
+      status === 'rejected'
+        ? `Re-take or re-submit: previous attempt was rejected.`
+        : status === 'expired'
+          ? `Renewal needed: prior certificate has expired.`
+          : `Required for this position and not yet on file.`;
+
+    return {
+      requirement_id: s.requirement.id,
+      code,
+      title: s.requirement.title,
+      group_label: s.requirement.group_label,
+      rationale: reason,
+      emi_url: code && /^IS-/i.test(code)
+        ? `https://training.fema.gov/is/courseoverview.aspx?code=${encodeURIComponent(code)}`
+        : null,
+    };
+  });
+
+  return { recommendations, error: null };
 }
 
 // ── Fulfillment — responder side ──────────────────────────

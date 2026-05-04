@@ -1,8 +1,12 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
 import { Search, X } from 'lucide-react';
-import { addPursuit, searchPositions } from '@/lib/actions/requirements';
+import {
+  addPursuit,
+  listPositionFacets,
+  searchPositions,
+} from '@/lib/actions/requirements';
 import type { NimsType } from '@/lib/types/enums';
 
 type PositionRow = {
@@ -29,30 +33,63 @@ export default function AddPositionModal({
   onAdded: () => void;
 }) {
   const [query, setQuery] = useState('');
+  const [discipline, setDiscipline] = useState('');
+  const [category, setCategory] = useState('');
   const [results, setResults] = useState<PositionRow[]>([]);
+  const [facets, setFacets] = useState<{
+    disciplines: string[];
+    categories: string[];
+  }>({ disciplines: [], categories: [] });
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [adding, startAdding] = useTransition();
+  const prevOpenRef = useRef(open);
 
   useEffect(() => {
     if (!open) return;
     const handle = setTimeout(async () => {
       setIsSearching(true);
       setError(null);
-      const { data, error: err } = await searchPositions(query, 40);
+      const { data, error: err } = await searchPositions({
+        query,
+        discipline: discipline || undefined,
+        resource_category: category || undefined,
+        limit: 40,
+      });
       if (err) setError(err);
       else setResults(data);
       setIsSearching(false);
     }, 200);
     return () => clearTimeout(handle);
-  }, [query, open]);
+  }, [query, discipline, category, open]);
 
+  // Load facets once when the modal first opens.
   useEffect(() => {
-    if (!open) {
-      setQuery('');
-      setResults([]);
-      setError(null);
-    }
+    if (!open) return;
+    let cancelled = false;
+    (async () => {
+      const { disciplines, categories } = await listPositionFacets();
+      if (cancelled) return;
+      setFacets({ disciplines, categories });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
+
+  // Reset form state when modal transitions from open → closed
+  const handleClose = useCallback(() => {
+    setQuery('');
+    setDiscipline('');
+    setCategory('');
+    setResults([]);
+    setError(null);
+    onClose();
+  }, [onClose]);
+
+  // Track open state transitions via ref (no setState in effect)
+  useEffect(() => {
+    prevOpenRef.current = open;
   }, [open]);
 
   if (!open) return null;
@@ -65,7 +102,7 @@ export default function AddPositionModal({
         return;
       }
       onAdded();
-      onClose();
+      handleClose();
     });
   }
 
@@ -88,7 +125,7 @@ export default function AddPositionModal({
           </div>
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1.5 text-gray-400 hover:text-gray-600 rounded"
             aria-label="Close"
           >
@@ -96,7 +133,7 @@ export default function AddPositionModal({
           </button>
         </div>
 
-        <div className="px-5 py-3 border-b border-gray-200">
+        <div className="px-5 py-3 border-b border-gray-200 space-y-2">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
@@ -107,6 +144,50 @@ export default function AddPositionModal({
               className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-[var(--gs-gold,#C5933A)]"
               autoFocus
             />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <label className="flex-1 min-w-[180px]">
+              <span className="sr-only">Filter by discipline</span>
+              <select
+                value={discipline}
+                onChange={(e) => setDiscipline(e.target.value)}
+                className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[var(--gs-gold,#C5933A)]"
+              >
+                <option value="">All disciplines</option>
+                {facets.disciplines.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="flex-1 min-w-[180px]">
+              <span className="sr-only">Filter by resource category</span>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full px-2 py-1.5 border border-gray-300 rounded text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[var(--gs-gold,#C5933A)]"
+              >
+                <option value="">All categories</option>
+                {facets.categories.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {(discipline || category) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setDiscipline('');
+                  setCategory('');
+                }}
+                className="px-2 py-1 text-xs text-[var(--gs-steel,#6B7280)] hover:text-[var(--gs-navy,#0A1628)]"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         </div>
 
