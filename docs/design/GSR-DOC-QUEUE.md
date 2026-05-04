@@ -6,7 +6,7 @@ classification: INTERNAL — DEVELOPMENT REFERENCE
 status: active
 author: Roy E. Dunn
 created: 2026-04-09
-updated: 2026-04-24
+updated: 2026-05-04
 notes: Canonical index. ATLAS scans this to determine build readiness. Nothing gets built without a design doc. Nothing gets a design doc without a number here. Filename and structure rules live in NAMING-CONVENTIONS.md — read it before adding entries.
 ---
 
@@ -86,15 +86,15 @@ Claude Code only builds from docs with **status: approved** and **blocks_on: []*
 
 | Doc ID | Title | Priority | Status | Blocks On | Notes |
 |--------|-------|----------|--------|-----------|-------|
-| GSR-DOC-200 | Authentication — Registration + Login | CRITICAL | DRAFT | DOC-002, DOC-004 | NextAuth.js v5, credentials provider, bcrypt, JWT, role-based middleware. MFA placeholder. |
-| GSR-DOC-201 | Member Dashboard — Layout + Navigation | CRITICAL | DRAFT | DOC-200 | Sidebar (desktop), bottom nav (mobile). Home: welcome, status, balance, activity. |
+| GSR-DOC-200 | Authentication — Registration, Login, Session Management | CRITICAL | ✅ APPROVED | DOC-002, DOC-004 | Doc approved 2026-04-15. Implementation in flight. File: `GSR-DOC-200-AUTH.md`. |
+| GSR-DOC-201 | Member Dashboard — Layout + Navigation | CRITICAL | ❌ NOT AUTHORED | DOC-200 | **No design doc file exists.** Hard blocker for DOC-202, DOC-203, DOC-205 surfaces. Author needed before Phase 2 portal can ship. |
 | GSR-DOC-202 | Member Profile — View + Edit | CRITICAL | DRAFT | DOC-201, DOC-003 | Profile fields, privacy controls. What agencies see vs. private. File: `GSR-DOC-202-MEMBER-PROFILE.md`. Split from former combined doc on 2026-04-24. |
 | GSR-DOC-203 | Deployment Records — List + Create + Detail | CRITICAL | DRAFT | DOC-201, DOC-003 | ICS 222 Response Report. File: `GSR-DOC-203-DEPLOYMENT-RECORDS.md`. Split from former combined doc on 2026-04-24. |
 | GSR-DOC-204 | Incidents — Search + Create | HIGH | DRAFT | DOC-002 | Incident registry: search existing, create new. Used by deployment records. |
-| GSR-DOC-205 | Sky Points — Balance + History + Purchase | HIGH | DRAFT | DOC-201 | Balance, ledger history, Stripe checkout for purchases. OD-03 must be resolved. |
-| GSR-DOC-206 | Document Library — Upload + Categorize + Link | HIGH | DRAFT | DOC-201 | Upload, categorize, link to records/pathways. Storage abstraction layer. |
-| GSR-DOC-207 | Stripe Integration — Membership + Payments | HIGH | DRAFT | DOC-200, DOC-205 | Stripe test mode: $100/yr subscription, Sky Points purchases, webhook handling. |
-| GSR-DOC-208 | Certifications — Pathways + Progress | NORMAL | DRAFT | DOC-201, DOC-003 | Available pathways, progress tracking, earned certs. Read-only in Phase 2. |
+| GSR-DOC-205 | Sky Coins Economy — Balance, Ledger, Products, Pricing | HIGH | ✅ APPROVED | DOC-201 | OD-03 resolved (per coin_economy_reconcile migration). Implementation present in `src/lib/coins/`, `src/lib/types/economy.ts`. File: `GSR-DOC-205-SKY-COINS-ECONOMY.md`. **(Renumbered 2026-05-04: title corrected from former "Sky Points — Balance + History + Purchase.")** |
+| GSR-DOC-206 | Document Library — Upload, Categorize, Link | HIGH | ✅ APPROVED | DOC-201 | Storage abstraction layer. File: `GSR-DOC-206-DOCUMENT-LIBRARY.md`. |
+| GSR-DOC-207 | Position Requirements — RTLT-Driven Document Slots & Verification | CRITICAL | ✅ APPROVED | DOC-206 | Implementation landed 2026-05-04 in commit `404aeb9`. File: `GSR-DOC-207-POSITION-REQUIREMENTS.md`. **(Renumbered 2026-05-04: this slot was formerly "Stripe Integration — Membership + Payments," which moved to DOC-208.)** |
+| GSR-DOC-208 | Stripe Integration — Membership Subscriptions, Coin Packs, and Billing | CRITICAL | ✅ APPROVED | DOC-205 | Decision Brief locked by Roy 2026-05-02. Self-contained build prompt embedded in design doc. Partial scaffold present (`api/stripe/webhook/route.ts`, `lib/types/stripe.ts`). File: `GSR-DOC-208-STRIPE-INTEGRATION.md`. **(Renumbered 2026-05-04: this slot was formerly "Certifications — Pathways + Progress," which has not been re-authored.)** |
 
 ---
 
@@ -228,10 +228,14 @@ Inherited from GSR-DOC-000. Each blocks one or more design docs until resolved. 
 7. GSR-DOC-101 through GSR-DOC-107 — remaining public pages (101, 102, 105 outstanding)
 
 ### Phase 2 sprint (member value)
-8. GSR-DOC-200 — Authentication ← **NEXT**
+8. ~~GSR-DOC-200 — Authentication~~ ✅ APPROVED (in flight)
 9. GSR-DOC-900 — Security Hardening (applied immediately with auth)
-10. GSR-DOC-201 — Dashboard Layout
-11. GSR-DOC-202 through GSR-DOC-208 — member features
+10. GSR-DOC-201 — Dashboard Layout ← **AUTHOR NEEDED (no file exists)**
+11. GSR-DOC-208 — Stripe Integration ← **DISPATCHING TO CLAUDE CODE 2026-05-04**
+12. GSR-DOC-202, DOC-203 — Profile + Deployment Records (drafts; author finalization needed)
+13. GSR-DOC-206 — Document Library
+14. ~~GSR-DOC-207 — Position Requirements~~ ✅ COMPLETE (commit 404aeb9, 2026-05-04)
+15. ~~GSR-DOC-205 — Sky Coins Economy~~ ✅ APPROVED (implementation present)
 
 ### Phase 6 sprint (organization sponsorship + team credentialing)
 12. GSR-DOC-600 — Organization Onboarding + Sponsorship Model

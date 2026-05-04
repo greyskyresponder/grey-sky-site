@@ -11,7 +11,7 @@ updated: 2026-05-02
 notes: Decision Brief reviewed and locked by Roy 2026-05-02. All eight primary decisions plus two follow-ups resolved interactively. Decision Log appendix preserved at end of doc.
 ---
 
-# GSR-DOC-207: Stripe Integration
+# GSR-DOC-208: Stripe Integration
 
 | Field | Value |
 |-------|-------|
@@ -572,7 +572,7 @@ This appendix records the architectural decisions made during the Decision Brief
 
 ## Claude Code Prompt
 
-You are Claude Code, executing GSR-DOC-207 against the `greyskyresponder/grey-sky-site` repository. This prompt is self-contained. Do not reference other GSR-DOC files; everything you need is here.
+You are Claude Code, executing GSR-DOC-208 against the `greyskyresponder/grey-sky-site` repository. This prompt is self-contained. Do not reference other GSR-DOC files; everything you need is here.
 
 ### Stack context
 
