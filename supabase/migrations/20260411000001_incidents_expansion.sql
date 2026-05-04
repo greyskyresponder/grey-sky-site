@@ -295,6 +295,12 @@ ALTER TABLE incident_updates ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users can view all incidents" ON incidents;
 DROP POLICY IF EXISTS "Authenticated users can create incidents" ON incidents;
 
+-- Drop policies from 20260409000008_rls_policies.sql that this migration replaces
+-- (added 2026-05-04 — original migration missed these, breaking `db reset`)
+DROP POLICY IF EXISTS incidents_select_all ON incidents;
+DROP POLICY IF EXISTS incidents_insert_authenticated ON incidents;
+DROP POLICY IF EXISTS incidents_update_admin ON incidents;
+
 -- Incidents: any authenticated user can read non-merged incidents
 CREATE POLICY incidents_select_authenticated ON incidents
   FOR SELECT TO authenticated
