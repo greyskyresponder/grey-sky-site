@@ -22,6 +22,12 @@ const serverSchema = z.object({
   STRIPE_SECRET_KEY: z.string().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
   STRIPE_MEMBERSHIP_PRICE_ID: z.string().min(1).optional(),
+  // GSR-DOC-208: coin pack price IDs (one Stripe Price per SKU). All optional;
+  // billing routes that consume them validate presence at request time.
+  STRIPE_PRICE_COINS_100: z.string().min(1).optional(),
+  STRIPE_PRICE_COINS_500: z.string().min(1).optional(),
+  STRIPE_PRICE_COINS_1000: z.string().min(1).optional(),
+  STRIPE_PRICE_COINS_2500: z.string().min(1).optional(),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   EMAIL_MODE: z.enum(['console', 'sendgrid', 'disabled']).default('console'),
   SENDGRID_API_KEY: z.string().optional(),
