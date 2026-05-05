@@ -36,6 +36,17 @@ export interface User {
   membership_started_at: string | null;
   /** When membership coins were last credited (used to prevent double-grant). */
   membership_coins_granted_at: string | null;
+  // ── GSR-DOC-208 billing extensions ──────────────────────────────
+  /** True iff member is currently verified-active (eligible for verifications). */
+  verified_active: boolean | null;
+  /** Verification eligibility horizon (typically equals membership_expires_at). */
+  verified_active_until: string | null;
+  /** Set true when a payment fails or membership lapses; coin spends are denied. */
+  spending_blocked: boolean | null;
+  /** When the current grace period started (after first invoice.payment_failed). */
+  grace_period_started_at: string | null;
+  /** When the current grace period ends (14 days after start by default). */
+  grace_period_ends_at: string | null;
   status: UserStatus;
   created_at: string;
   updated_at: string;
