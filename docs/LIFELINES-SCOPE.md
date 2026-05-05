@@ -195,7 +195,7 @@ This is where it gets powerful. The WatchOffice architecture Roy already approve
 - This is the "daily check" tool that gets EMs coming back
 - Establishes Grey Sky as the authoritative source for lifeline status
 
-### Grey Sky Member Tier ($10/mo or $99/yr)
+### Grey Sky Member Tier ($10/mo or $100/yr)
 - Report lifeline status for your jurisdiction
 - Edit/validate WatchOffice-populated data
 - Historical dashboard access

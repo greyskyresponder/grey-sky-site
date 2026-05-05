@@ -192,6 +192,24 @@ $ supabase db reset
 
 ---
 
+## Pricing Reconciliation (added post-build, 2026-05-04)
+
+Roy reconfirmed the canonical Society Member pricing on 2026-05-04 at 20:38 ET (re-affirming the 2026-04-09 directive):
+
+> **$100/yr = 1,000 Sky Coins.**
+
+Reconciliation actions taken before push:
+
+* `src/components/Membership.tsx` — Society Member annual changed from `$99` to `$100`; "Save $21" copy corrected to "Save $20".
+* `docs/LIFELINES-SCOPE.md` — Member tier line corrected from `$10/mo or $99/yr` to `$10/mo or $100/yr`.
+* DOC-208 code itself contains **no hardcoded price** — the membership amount lives in Stripe (env var `STRIPE_MEMBERSHIP_PRICE_ID`). Webhook trusts whatever Stripe charges.
+* `MEMBERSHIP_GRANT_COINS = 1000` in the webhook handler is correct and unchanged — matches the canonical pricing.
+* The Stripe Price object pointed at by `STRIPE_MEMBERSHIP_PRICE_ID` must be set to **$100/yr (10000 cents)** in the Stripe Dashboard before launch. If the existing Price is at $99 it must be replaced (Stripe Prices are immutable).
+
+The `$999` Deployment Ready tier and the historical `$99/$499/$999` reference in `GSR-DOC-000-PLATFORM-SPEC.md` are out of DOC-208 scope.
+
+---
+
 ## Known Gaps / Follow-ups (not blockers)
 
 1. **REST routes vs Server Actions duplication.** Two valid code paths to checkout/portal exist. Recommend a follow-up to consolidate the existing Server Actions (`src/lib/stripe/actions.ts`) onto the new helpers (`src/lib/stripe/checkout.ts` / `customer.ts`), then either deprecate the REST routes or rewrite the existing UI to call them. Out of scope for DOC-208.
@@ -210,6 +228,7 @@ When you're ready to push:
 - [ ] Spot-check the diff: `git diff 4b8aee1..HEAD --stat` and any files of concern
 - [ ] (Optional) Drop me back into the session for any rework
 - [ ] Approve push: `git push origin main` (8 commits stacked)
+- [ ] Verify the Stripe Price object behind `STRIPE_MEMBERSHIP_PRICE_ID` is **$100/yr (10000 cents)** — if currently $99, replace it (Stripe Prices are immutable) and update the env var
 - [ ] Set the 4 `STRIPE_PRICE_COINS_*` env vars in Azure Static Web Apps before users hit `/dashboard/coins/purchase` via the new SKUs
 - [ ] Set up Stripe webhook endpoint for the 2 new event types in test mode (`charge.refunded`, `invoice.payment_failed`) — existing endpoint already has signature secret
 

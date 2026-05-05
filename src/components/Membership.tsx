@@ -2,8 +2,8 @@ const tiers = [
   {
     name: "Society Member",
     monthly: "$10",
-    annual: "$99",
-    annualSave: "Save $21",
+    annual: "$100",
+    annualSave: "Save $20",
     description: "Join the professional community",
     features: [
       "Member directory access",
