@@ -5,6 +5,8 @@ import {
   createCoinPurchaseCheckoutEvent,
   createRenewalInvoiceEvent,
   createSubscriptionUpdateEvent,
+  createPaymentFailedEvent,
+  createChargeRefundedEvent,
   buildWebhookRequest,
   createStripeEvent,
 } from '@/test/utils/stripe-helpers';
@@ -410,6 +412,204 @@ describe('POST /api/stripe/webhook — post-processing error handling', () => {
     expect(payload.processing_error.operations.length).toBe(2);
 
     errorSpy.mockRestore();
+  });
+});
+
+// ── GSR-DOC-208 ────────────────────────────────────────────────────────────
+
+describe('POST /api/stripe/webhook — invoice.payment_failed (DOC-208)', () => {
+  beforeEach(() => {
+    setNoDuplicateEvent();
+  });
+
+  it('opens a 14-day grace window on first failure and sets spending_blocked', async () => {
+    // user lookup by stripe_customer_id → grace fields are null (first failure)
+    mockAdmin.getFromBuilder('users').single.mockResolvedValue({
+      data: {
+        id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        grace_period_started_at: null,
+        grace_period_ends_at: null,
+      },
+      error: null,
+    });
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createPaymentFailedEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    const usersBuilder = mockAdmin.getFromBuilder('users');
+    expect(usersBuilder.update).toHaveBeenCalled();
+    const updateArg = usersBuilder.update.mock.calls[0][0] as Record<string, unknown>;
+    expect(updateArg.spending_blocked).toBe(true);
+    expect(typeof updateArg.grace_period_started_at).toBe('string');
+    expect(typeof updateArg.grace_period_ends_at).toBe('string');
+
+    // ~14 days between start and end (allow 1s of clock drift)
+    const start = new Date(updateArg.grace_period_started_at as string).getTime();
+    const end = new Date(updateArg.grace_period_ends_at as string).getTime();
+    const fourteenDaysMs = 14 * 24 * 60 * 60 * 1000;
+    expect(end - start).toBeGreaterThanOrEqual(fourteenDaysMs - 1000);
+    expect(end - start).toBeLessThanOrEqual(fourteenDaysMs + 1000);
+  });
+
+  it('does not reopen grace timestamps on subsequent failures within an open window', async () => {
+    const futureEnd = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    const earlyStart = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    mockAdmin.getFromBuilder('users').single.mockResolvedValue({
+      data: {
+        id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        grace_period_started_at: earlyStart,
+        grace_period_ends_at: futureEnd,
+      },
+      error: null,
+    });
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createPaymentFailedEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    const updateArg = mockAdmin.getFromBuilder('users').update.mock.calls[0][0] as Record<
+      string,
+      unknown
+    >;
+    expect(updateArg.spending_blocked).toBe(true);
+    // Timestamps NOT touched on subsequent failures.
+    expect(updateArg).not.toHaveProperty('grace_period_started_at');
+    expect(updateArg).not.toHaveProperty('grace_period_ends_at');
+  });
+
+  it('skips entirely when the invoice has no customer', async () => {
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(
+      createPaymentFailedEvent({ customer: null }),
+    );
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    // No user lookup, no updates.
+    expect(mockAdmin.getFromBuilder('users').single).not.toHaveBeenCalled();
+    expect(mockAdmin.getFromBuilder('users').update).not.toHaveBeenCalled();
+  });
+
+  it('skips one-time-payment invoices (no subscription on the invoice)', async () => {
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(
+      createPaymentFailedEvent({
+        subscription: null,
+        lines: { data: [{}] },
+      }),
+    );
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    expect(mockAdmin.getFromBuilder('users').update).not.toHaveBeenCalled();
+  });
+});
+
+describe('POST /api/stripe/webhook — charge.refunded (DOC-208)', () => {
+  beforeEach(() => {
+    setNoDuplicateEvent();
+  });
+
+  it('reverses the coin grant via reverse_coin_grant() and stamps refunded_at', async () => {
+    const purchaseId = '11111111-2222-3333-4444-555555555555';
+    const ledgerId = '99999999-8888-7777-6666-555555555555';
+    const reversalId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+
+    mockAdmin.getFromBuilder('stripe_coin_pack_purchases').maybeSingle.mockResolvedValue({
+      data: {
+        id: purchaseId,
+        user_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        ledger_entry_id: ledgerId,
+        refunded_at: null,
+      },
+      error: null,
+    });
+    // Mock the rpc(reverse_coin_grant) success.
+    mockAdmin.rpc.mockImplementationOnce(() =>
+      Promise.resolve({ data: reversalId, error: null }),
+    );
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createChargeRefundedEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+
+    // RPC called with event id as idempotency key.
+    expect(mockAdmin.rpc).toHaveBeenCalledWith('reverse_coin_grant', expect.objectContaining({
+      p_original_ledger_entry_id: ledgerId,
+      p_reason: 'Stripe charge refund',
+    }));
+    const rpcCallArgs = mockAdmin.rpc.mock.calls[0] as unknown as [
+      string,
+      Record<string, unknown>?,
+    ];
+    const rpcArgs = (rpcCallArgs[1] ?? {}) as Record<string, unknown>;
+    expect(typeof rpcArgs.p_idempotency_key).toBe('string');
+    expect((rpcArgs.p_idempotency_key as string).startsWith('evt_')).toBe(true);
+
+    // refunded_at + refund_ledger_entry_id stamped on the purchase row.
+    const purchaseBuilder = mockAdmin.getFromBuilder('stripe_coin_pack_purchases');
+    expect(purchaseBuilder.update).toHaveBeenCalled();
+    const updateArg = purchaseBuilder.update.mock.calls[0][0] as Record<string, unknown>;
+    expect(typeof updateArg.refunded_at).toBe('string');
+    expect(updateArg.refund_ledger_entry_id).toBe(reversalId);
+  });
+
+  it('skips when no matching coin pack purchase is found (e.g. membership refund)', async () => {
+    mockAdmin.getFromBuilder('stripe_coin_pack_purchases').maybeSingle.mockResolvedValue({
+      data: null,
+      error: null,
+    });
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createChargeRefundedEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    expect(mockAdmin.rpc).not.toHaveBeenCalled();
+    expect(
+      mockAdmin.getFromBuilder('stripe_coin_pack_purchases').update,
+    ).not.toHaveBeenCalled();
+  });
+
+  it('is idempotent: skips when refunded_at is already set', async () => {
+    mockAdmin.getFromBuilder('stripe_coin_pack_purchases').maybeSingle.mockResolvedValue({
+      data: {
+        id: '11111111-2222-3333-4444-555555555555',
+        user_id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        ledger_entry_id: '99999999-8888-7777-6666-555555555555',
+        refunded_at: '2026-05-04T19:00:00.000Z',
+      },
+      error: null,
+    });
+
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(createChargeRefundedEvent());
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    expect(mockAdmin.rpc).not.toHaveBeenCalled();
+    expect(
+      mockAdmin.getFromBuilder('stripe_coin_pack_purchases').update,
+    ).not.toHaveBeenCalled();
+  });
+
+  it('skips when the charge has no payment_intent', async () => {
+    const { POST } = await import('@/app/api/stripe/webhook/route');
+    const request = buildWebhookRequest(
+      createChargeRefundedEvent({ payment_intent: null }),
+    );
+    const response = await POST(request as unknown as import('next/server').NextRequest);
+
+    expect(response.status).toBe(200);
+    expect(
+      mockAdmin.getFromBuilder('stripe_coin_pack_purchases').maybeSingle,
+    ).not.toHaveBeenCalled();
+    expect(mockAdmin.rpc).not.toHaveBeenCalled();
   });
 });
 

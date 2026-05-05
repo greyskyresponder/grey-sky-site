@@ -88,6 +88,30 @@ export function createSubscriptionUpdateEvent(
   });
 }
 
+// ── GSR-DOC-208 factories ─────────────────────────────────────────────────
+
+export function createPaymentFailedEvent(overrides: Record<string, unknown> = {}) {
+  return createStripeEvent('invoice.payment_failed', {
+    id: 'in_test_failed',
+    customer: 'cus_test_customer',
+    subscription: 'sub_test_subscription',
+    billing_reason: 'subscription_cycle',
+    lines: { data: [{ subscription: 'sub_test_subscription' }] },
+    ...overrides,
+  });
+}
+
+export function createChargeRefundedEvent(overrides: Record<string, unknown> = {}) {
+  return createStripeEvent('charge.refunded', {
+    id: 'ch_test_refunded',
+    payment_intent: 'pi_test_payment_intent',
+    amount: 1000,
+    amount_refunded: 1000,
+    refunded: true,
+    ...overrides,
+  });
+}
+
 /** Build a mock NextRequest-compatible Request for POST /api/stripe/webhook. */
 export function buildWebhookRequest(
   event: MockStripeEvent | null,
