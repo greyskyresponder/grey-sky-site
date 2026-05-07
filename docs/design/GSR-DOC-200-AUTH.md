@@ -2,12 +2,12 @@
 doc_id: GSR-DOC-200
 title: Authentication — Registration, Login, Session Management
 phase: 2
-status: approved
+status: complete
 blocks_on: []
 priority: critical
 author: Roy E. Dunn
 created: 2026-04-10
-updated: 2026-04-10
+updated: 2026-05-07
 notes: >
   OD-01 RESOLVED: MFA deferred. Build toggle only, enforcement in DOC-900.
   OD-02 RESOLVED: Stripe Identity deferred to Phase 5 credentialing. Registration is open (email + password).
@@ -315,23 +315,23 @@ src/components/auth/
 
 ## 11. Acceptance Criteria
 
-- [ ] Registration form collects first name, last name, email, password, confirm password, optional state, optional phone
-- [ ] Registration calls Supabase auth.signUp with metadata — does NOT insert into public.users directly
-- [ ] Auth sync trigger creates public.users row automatically on registration
-- [ ] Login form authenticates via Supabase auth.signInWithPassword
-- [ ] Login redirects to `?redirect` param or `/dashboard` on success
-- [ ] Auth callback route at `/auth/callback` exchanges code for session
-- [ ] Password reset sends email via Supabase, update form sets new password
-- [ ] Middleware redirects unauthenticated users from /dashboard/*, /agency/*, /admin/*
-- [ ] Middleware checks role for /admin/* (platform_admin) and /agency/* (org_admin)
-- [ ] Zod schemas validate all form inputs on client and server
-- [ ] useUser hook provides current user + profile to client components
-- [ ] getUser utility provides same for server components
-- [ ] signOut action clears session and redirects to /
-- [ ] All pages use Grey Sky brand styling (Command Navy, Signal Gold, Inter font)
-- [ ] Mobile responsive on all auth pages
-- [ ] npm run build passes with zero errors
-- [ ] No Vercel-specific code
+- [x] Registration form collects first name, last name, email, password, confirm password, optional state, optional phone
+- [x] Registration calls Supabase auth.signUp with metadata — does NOT insert into public.users directly
+- [x] Auth sync trigger creates public.users row automatically on registration
+- [x] Login form authenticates via Supabase auth.signInWithPassword
+- [x] Login redirects to `?redirect` param or `/dashboard` on success
+- [x] Auth callback route at `/auth/callback` exchanges code for session
+- [x] Password reset sends email via Supabase, update form sets new password
+- [x] Middleware redirects unauthenticated users from /dashboard/*, /agency/*, /admin/*
+- [x] Middleware checks role for /admin/* (platform_admin) and /agency/* (org_admin)
+- [x] Zod schemas validate all form inputs on client and server
+- [x] useUser hook provides current user + profile to client components
+- [x] getUser utility provides same for server components
+- [x] signOut action clears session and redirects to /
+- [x] All pages use Grey Sky brand styling (Command Navy, Signal Gold, Inter font)
+- [x] Mobile responsive on all auth pages
+- [x] npm run build passes with zero errors
+- [x] No Vercel-specific code
 
 ---
 
